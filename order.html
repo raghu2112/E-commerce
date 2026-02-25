@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Place Order</title>
+<style>
+body{font-family:Arial;background:#f4f6fb;padding:30px}
+.card{background:white;padding:20px;border-radius:12px;
+max-width:420px;margin:auto;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.form{display:flex;flex-direction:column;gap:10px}
+input,select{padding:10px;border-radius:6px;border:1px solid #ccc}
+.btn{background:#2563eb;color:white;padding:10px;border:none;border-radius:8px}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h2>Order: {{design}}</h2>
+
+<p><b>Step 1:</b> Pay using PhonePe</p>
+<p>Number: <b>9XXXXXXXXX</b></p>
+
+<p><b>Scan QR:</b></p>
+<img src="/static/qr.png" width="200">
+
+<form method="POST" enctype="multipart/form-data" class="form">
+<select name="size">
+<option>S</option><option>M</option><option>L</option><option>XL</option>
+</select>
+
+<input name="quantity" placeholder="Quantity">
+<input name="address" placeholder="Delivery Address">
+<input name="phone" placeholder="Phone Number">
+
+<label>Upload Payment Screenshot</label>
+<input type="file" name="payment">
+
+<button class="btn">Submit Order</button>
+</form>
+
+</div>
+
+</body>
+</html>

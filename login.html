@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login</title>
+    <style>
+        body{
+            margin:0;
+            font-family:Arial, Helvetica, sans-serif;
+            background-image:url("https://images.unsplash.com/photo-1523381210434-271e8be1f52b");
+            background-size:cover;
+            background-position:center;
+        }
+        .overlay{
+            background:rgba(0,0,0,0.6);
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+        .box{
+            background:white;
+            padding:40px;
+            width:320px;
+            border-radius:12px;
+            text-align:center;
+            box-shadow:0px 0px 15px rgba(0,0,0,0.3);
+        }
+        h2{
+            margin-bottom:20px;
+        }
+        input{
+            width:100%;
+            padding:12px;
+            margin:10px 0;
+            border-radius:6px;
+            border:1px solid #ccc;
+        }
+        button{
+            background:#222;
+            color:white;
+            border:none;
+            padding:12px;
+            width:100%;
+            border-radius:6px;
+            cursor:pointer;
+        }
+        button:hover{
+            background:#444;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay">
+    <div class="box">
+        <h2>Admin Login</h2>
+        <form method="POST">
+            <input type="password" name="password" placeholder="Enter Admin Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

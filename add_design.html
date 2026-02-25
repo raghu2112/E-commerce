@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Design</title>
+<style>
+body{font-family:Arial;background:#f4f6fb;padding:30px}
+.form{background:white;padding:25px;border-radius:12px;
+max-width:350px;margin:auto;display:flex;flex-direction:column;gap:10px;
+box-shadow:0 4px 12px rgba(0,0,0,.1)}
+input{padding:10px;border-radius:6px;border:1px solid #ccc}
+button{background:#2563eb;color:white;padding:10px;border:none;border-radius:8px}
+</style>
+</head>
+<body>
+
+<form method="POST" enctype="multipart/form-data" class="form">
+<h2>Add New Design</h2>
+<input name="name" placeholder="Design Name">
+<input name="price" placeholder="Price">
+<input type="file" name="image">
+<button>Upload</button>
+</form>
+
+</body>
+</html>

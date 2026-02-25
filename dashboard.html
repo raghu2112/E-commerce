@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<style>
+body{font-family:Arial;background:#f4f6fb;padding:30px}
+h1{text-align:center}
+.grid{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
+.card{background:white;padding:15px;border-radius:12px;
+box-shadow:0 4px 12px rgba(0,0,0,.1);width:240px;text-align:center}
+.card img{width:100%;border-radius:10px}
+.btn{display:inline-block;margin-top:8px;background:#2563eb;color:white;
+padding:6px 12px;border-radius:6px;text-decoration:none}
+</style>
+</head>
+<body>
+
+<h1>Admin Dashboard</h1>
+
+<div style="text-align:center;margin-bottom:20px;">
+<a class="btn" href="/add_design">Upload Design</a>
+<a class="btn" href="/logout">Logout</a>
+</div>
+
+<div class="grid">
+{% for o in orders %}
+<div class="card">
+<p><b>{{o.design}}</b></p>
+<p>Size: {{o.size}}</p>
+<p>Qty: {{o.quantity}}</p>
+<p>{{o.phone}}</p>
+<p>Status: {{o.status}}</p>
+<img src="/static/uploads/{{o.payment_image}}">
+{% if o.status != 'Completed' %}
+<a class="btn" href="/complete/{{o.id}}">Mark Completed</a>
+{% endif %}
+</div>
+{% endfor %}
+</div>
+
+</body>
+</html>
