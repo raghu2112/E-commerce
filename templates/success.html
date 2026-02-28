@@ -1,17 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Success</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THREADLINE — Order Confirmed!</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:Arial;text-align:center;padding:40px;background:#f4f6fb}
-a{background:#2563eb;color:white;padding:10px 18px;border-radius:8px;text-decoration:none}
+  :root { --orange:#FF6B00; --dark:#0A0A0A; --card:#111; --text:#F0EDE8; --muted:#666; --border:rgba(255,255,255,0.08); --green:#22c55e; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; overflow:hidden; }
+  /* BG confetti-like dots */
+  .bg {
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 50% 60% at 50% 50%, rgba(34,197,94,0.06), transparent 60%),
+      radial-gradient(ellipse 30% 40% at 80% 20%, rgba(255,107,0,0.05), transparent),
+      #0A0A0A;
+  }
+  /* Animated rings */
+  .ring { position:fixed; border-radius:50%; border:1px solid rgba(34,197,94,0.08); animation:expand 3s ease-out infinite; }
+  .ring:nth-child(1){width:400px;height:400px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:0s}
+  .ring:nth-child(2){width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:1s}
+  .ring:nth-child(3){width:1000px;height:1000px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:2s}
+  @keyframes expand{0%{opacity:0.5;transform:translate(-50%,-50%) scale(0.8)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1)}}
+  .card {
+    position:relative; z-index:10;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:4px; padding:60px 52px; max-width:500px; width:100%;
+    text-align:center; box-shadow:0 40px 80px rgba(0,0,0,0.6);
+    animation:popIn 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  @keyframes popIn{from{opacity:0;transform:scale(0.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .success-icon {
+    width:72px; height:72px; border-radius:50%; background:rgba(34,197,94,0.1);
+    border:2px solid rgba(34,197,94,0.3); display:flex; align-items:center;
+    justify-content:center; margin:0 auto 28px;
+    animation:iconPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.4s both;
+  }
+  @keyframes iconPop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+  .eyebrow { font-size:0.65rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px; }
+  h1 { font-family:'Bebas Neue',sans-serif; font-size:3.5rem; letter-spacing:0.04em; margin-bottom:16px; line-height:1; }
+  .subtitle { color:var(--muted); font-size:0.92rem; line-height:1.65; font-weight:300; margin-bottom:40px; }
+  .steps { text-align:left; margin-bottom:40px; display:flex; flex-direction:column; gap:14px; }
+  .step { display:flex; align-items:flex-start; gap:14px; }
+  .step-num { width:26px; height:26px; min-width:26px; border-radius:50%; background:rgba(255,107,0,0.1); border:1px solid rgba(255,107,0,0.2); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:var(--orange); }
+  .step-text { font-size:0.85rem; color:var(--muted); line-height:1.5; padding-top:3px; }
+  .step-text strong { color:var(--text); font-weight:500; }
+  .divider { border:none; border-top:1px solid var(--border); margin:0 0 36px; }
+  .btn-row { display:flex; gap:14px; }
+  .btn-primary { flex:1; background:var(--orange); color:#000; border:none; padding:14px; font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; border-radius:3px; cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.25s; box-shadow:0 0 30px rgba(255,107,0,0.25); }
+  .btn-primary:hover { background:#ff7d1a; transform:translateY(-2px); box-shadow:0 4px 40px rgba(255,107,0,0.4); }
+  .btn-secondary { padding:14px 20px; border:1px solid var(--border); color:var(--muted); text-decoration:none; font-size:0.8rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; border-radius:3px; transition:all 0.25s; display:flex; align-items:center; justify-content:center; }
+  .btn-secondary:hover { border-color:var(--orange); color:var(--orange); }
 </style>
 </head>
 <body>
+<div class="bg"></div>
+<div class="ring"></div>
+<div class="ring"></div>
+<div class="ring"></div>
 
-<h1>Order Placed Successfully ✅</h1>
-<p>We will verify payment and contact you soon.</p>
-<a href="/">Back to Home</a>
+<div class="card">
+  <div class="success-icon">
+    <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+      <path d="M6 15l6 6L24 9" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
 
+  <p class="eyebrow">Order Confirmed</p>
+  <h1>You're all<br>set!</h1>
+  <p class="subtitle">Your order has been received. We'll verify your payment and get it ready for dispatch soon.</p>
+
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">1</span>
+      <p class="step-text"><strong>Payment Verified</strong> — We'll check your screenshot within a few hours.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">2</span>
+      <p class="step-text"><strong>Printed & Packed</strong> — Your custom tee gets printed and packed with care.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      <p class="step-text"><strong>Shipped to You</strong> — Delivered right to your doorstep.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="btn-row">
+    <a class="btn-primary" href="/static/invoices/{{invoice}}" download>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M8 11L4 7M8 11L12 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Download Invoice
+    </a>
+    <a class="btn-secondary" href="/">Home</a>
+  </div>
+</div>
 </body>
 </html>
