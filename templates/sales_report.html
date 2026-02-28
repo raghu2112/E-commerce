@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THREADLINE — Sales Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --orange:#FF6B00; --dark:#0A0A0A; --card:#111; --text:#F0EDE8; --muted:#666; --border:rgba(255,255,255,0.07); }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; padding:48px; }
+  .bg { position:fixed; inset:0; background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,107,0,0.06), transparent); pointer-events:none; z-index:0; }
+  .content { position:relative; z-index:1; max-width:900px; margin:0 auto; }
+  .back-link { display:inline-flex; align-items:center; gap:8px; color:var(--muted); font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; margin-bottom:40px; transition:color 0.2s; }
+  .back-link:hover { color:var(--orange); }
+  .eyebrow { font-size:0.65rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--orange); font-weight:700; margin-bottom:10px; }
+  h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,6vw,5rem); letter-spacing:0.04em; margin-bottom:48px; line-height:1; }
+  .chart-card { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:40px; margin-bottom:28px; box-shadow:0 20px 60px rgba(0,0,0,0.4); animation:up 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+  @keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .chart-card:nth-child(2){animation-delay:.1s} .chart-card:nth-child(3){animation-delay:.2s}
+  .chart-title { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:0.05em; margin-bottom:28px; }
+  .chart-wrap { position:relative; height:320px; }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="content">
+  <a href="/dashboard" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M3 8L7 4M3 8L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Dashboard
+  </a>
+  <p class="eyebrow">Analytics</p>
+  <h1>Sales<br>Analysis</h1>
+
+  <div class="chart-card">
+    <p class="chart-title">Orders Per Design</p>
+    <div class="chart-wrap">
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <p class="chart-title">Distribution</p>
+    <div class="chart-wrap">
+      <canvas id="doughnutChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+const labels = {{ labels|tojson }};
+const values = {{ values|tojson }};
+const orange = '#FF6B00';
+const orangeFade = 'rgba(255,107,0,0.15)';
+const colors = labels.map((_,i) => `hsl(${(i * 47 + 15) % 360},80%,60%)`);
+
+Chart.defaults.color = '#666';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [{
+      label: 'Total Orders',
+      data: values,
+      backgroundColor: orange,
+      borderRadius: 3,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1a1a1a',
+        borderColor: 'rgba(255,107,0,0.3)',
+        borderWidth: 1,
+        titleColor: '#FF6B00',
+        bodyColor: '#F0EDE8',
+        padding: 12,
+      }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#666' } },
+      y: { beginAtZero: true, ticks: { precision: 0, color: '#666' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('doughnutChart'), {
+  type: 'doughnut',
+  data: {
+    labels,
+    datasets: [{
+      data: values,
+      backgroundColor: colors,
+      borderColor: '#111',
+      borderWidth: 3,
+      hoverOffset: 8,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: { position: 'right', labels: { padding: 20, boxWidth: 12, borderRadius: 2, color: '#888' } },
+      tooltip: { backgroundColor: '#1a1a1a', borderColor: 'rgba(255,107,0,0.3)', borderWidth: 1, titleColor: '#FF6B00', bodyColor: '#F0EDE8', padding: 12 }
+    }
+  }
+});
+</script>
+</body>
+</html>
