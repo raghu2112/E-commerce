@@ -1,42 +1,345 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THREADLINE — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:Arial;background:#f4f6fb;padding:30px}
-h1{text-align:center}
-.grid{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
-.card{background:white;padding:15px;border-radius:12px;
-box-shadow:0 4px 12px rgba(0,0,0,.1);width:240px;text-align:center}
-.card img{width:100%;border-radius:10px}
-.btn{display:inline-block;margin-top:8px;background:#2563eb;color:white;
-padding:6px 12px;border-radius:6px;text-decoration:none}
+  :root {
+    --orange:#FF6B00; --dark:#0A0A0A; --dark2:#0d0d0d; --card:#111;
+    --text:#F0EDE8; --muted:#666; --border:rgba(255,255,255,0.07);
+    --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; display:flex; }
+
+  /* ── SIDEBAR ─────────────────────────────────────────── */
+  .sidebar {
+    width:240px; min-height:100vh; background:var(--dark2);
+    border-right:1px solid var(--border);
+    display:flex; flex-direction:column;
+    position:fixed; top:0; left:0; bottom:0; z-index:100; padding:32px 0;
+  }
+  .sidebar-logo { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:0.1em; padding:0 28px 32px; border-bottom:1px solid var(--border); }
+  .sidebar-logo span { color:var(--orange); }
+  .sidebar-nav { padding:24px 16px; flex:1; display:flex; flex-direction:column; gap:4px; }
+  .nav-item { display:flex; align-items:center; gap:12px; padding:12px 14px; text-decoration:none; color:var(--muted); font-size:0.82rem; font-weight:500; letter-spacing:0.04em; border-radius:3px; transition:all 0.2s; }
+  .nav-item:hover { background:rgba(255,107,0,0.08); color:var(--text); }
+  .nav-item.active { background:rgba(255,107,0,0.12); color:var(--orange); }
+  .nav-item svg { flex-shrink:0; opacity:0.7; }
+  .nav-item.active svg { opacity:1; }
+  .sidebar-bottom { padding:16px 16px 0; border-top:1px solid var(--border); }
+  .logout-btn { display:flex; align-items:center; gap:10px; padding:12px 14px; text-decoration:none; color:var(--muted); font-size:0.82rem; font-weight:500; border-radius:3px; transition:all 0.2s; }
+  .logout-btn:hover { color:var(--red); background:rgba(239,68,68,0.08); }
+
+  /* ── MAIN ────────────────────────────────────────────── */
+  .main { margin-left:240px; flex:1; padding:40px; min-height:100vh; }
+  .page-header { margin-bottom:36px; }
+  .page-eyebrow { font-size:0.65rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--orange); font-weight:700; margin-bottom:8px; }
+  .page-title { font-family:'Bebas Neue',sans-serif; font-size:3rem; letter-spacing:0.04em; }
+
+  /* ── STATS ───────────────────────────────────────────── */
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:40px; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:24px; transition:border-color 0.25s; }
+  .stat-card:hover { border-color:rgba(255,107,0,0.25); }
+  .stat-label { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:12px; }
+  .stat-value { font-family:'Bebas Neue',sans-serif; font-size:2.6rem; letter-spacing:0.04em; line-height:1; }
+  .stat-value.orange { color:var(--orange); }
+  .stat-value.green  { color:var(--green); }
+  .stat-sub { font-size:0.75rem; color:var(--muted); margin-top:6px; }
+
+  /* ── SECTION ─────────────────────────────────────────── */
+  .section { background:var(--card); border:1px solid var(--border); border-radius:4px; margin-bottom:28px; overflow:hidden; }
+  .section-head { display:flex; align-items:center; justify-content:space-between; padding:22px 28px; border-bottom:1px solid var(--border); }
+  .section-name { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.06em; }
+  .section-badge { font-size:0.63rem; letter-spacing:0.18em; text-transform:uppercase; font-weight:700; padding:5px 12px; border-radius:2px; }
+  .badge-orange { background:rgba(255,107,0,0.12); color:var(--orange); }
+  .badge-green  { background:rgba(34,197,94,0.1);  color:var(--green); }
+  .badge-muted  { background:rgba(255,255,255,0.05); color:var(--muted); }
+
+  /* ── PHONEPE SETTINGS ────────────────────────────────── */
+  .settings-form { padding:28px; display:flex; gap:16px; align-items:flex-end; }
+  .settings-field { flex:1; }
+  .settings-field label { display:block; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:8px; }
+  .settings-field input { width:100%; background:#1a1a1a; border:1px solid var(--border); color:var(--text); padding:12px 16px; font-family:'DM Sans',sans-serif; font-size:0.9rem; border-radius:3px; outline:none; transition:all 0.25s; }
+  .settings-field input:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(255,107,0,0.1); }
+  .btn-orange { background:var(--orange); color:#000; border:none; padding:12px 24px; font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; border-radius:3px; cursor:pointer; transition:all 0.25s; white-space:nowrap; text-decoration:none; display:inline-block; }
+  .btn-orange:hover { background:#ff7d1a; transform:translateY(-1px); }
+
+  /* ── TABLE ───────────────────────────────────────────── */
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:0.83rem; }
+  thead th { padding:13px 16px; text-align:left; font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:700; background:#0d0d0d; border-bottom:1px solid var(--border); white-space:nowrap; }
+  tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:rgba(255,255,255,0.02); }
+  tbody td { padding:13px 16px; color:var(--text); vertical-align:middle; }
+  .td-id { font-family:monospace; font-size:0.78rem; color:var(--muted); }
+  .td-muted { font-size:0.78rem; color:var(--muted); }
+
+  /* STATUS BADGES */
+  .badge { display:inline-block; padding:4px 12px; border-radius:2px; font-size:0.63rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; }
+  .badge-pending   { background:rgba(255,107,0,0.12); color:var(--orange); }
+  .badge-completed { background:rgba(34,197,94,0.1);  color:var(--green); }
+  .badge-size      { background:rgba(255,255,255,0.07); color:var(--text); }
+
+  /* COMPLETE BUTTON */
+  .complete-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(34,197,94,0.1); color:var(--green);
+    border:1px solid rgba(34,197,94,0.25); padding:7px 14px;
+    font-family:'DM Sans',sans-serif; font-size:0.72rem;
+    font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+    border-radius:3px; cursor:pointer; text-decoration:none;
+    transition:all 0.25s; white-space:nowrap;
+  }
+  .complete-btn:hover { background:rgba(34,197,94,0.2); border-color:rgba(34,197,94,0.5); transform:translateY(-1px); box-shadow:0 4px 16px rgba(34,197,94,0.15); }
+
+  /* PAYMENT THUMB */
+  .payment-thumb { width:48px; height:48px; object-fit:cover; border-radius:3px; border:1px solid var(--border); cursor:pointer; transition:transform 0.2s; }
+  .payment-thumb:hover { transform:scale(1.1); }
+
+  /* LINKS */
+  .action-link { color:var(--orange); text-decoration:none; font-size:0.75rem; font-weight:600; letter-spacing:0.08em; transition:opacity 0.2s; }
+  .action-link:hover { opacity:0.7; }
+  .action-link.danger { color:var(--red); }
+  .action-sep { color:var(--border); margin:0 6px; }
+
+  /* DESIGN TABLE */
+  .design-img { width:48px; height:48px; object-fit:cover; border-radius:3px; border:1px solid var(--border); }
+  .stock-in  { color:var(--green); font-weight:600; font-size:0.8rem; }
+  .stock-out { color:var(--red);   font-weight:600; font-size:0.8rem; }
+
+  /* EMPTY */
+  .empty-row td { text-align:center; padding:56px; color:var(--muted); font-size:0.85rem; }
+  .empty-row td span { display:block; font-size:1.8rem; margin-bottom:10px; opacity:0.3; }
+
+  /* COMPLETED TABLE: slight green tint on rows */
+  .completed-row { background:rgba(34,197,94,0.02); }
+  .completed-row:hover { background:rgba(34,197,94,0.05) !important; }
+  .completed-at { font-size:0.72rem; color:var(--green); opacity:0.8; }
+
+  @media(max-width:1200px){ .stats{grid-template-columns:repeat(2,1fr)} }
+  @media(max-width:900px){ .sidebar{display:none} .main{margin-left:0;padding:24px} }
 </style>
 </head>
 <body>
 
-<h1>Admin Dashboard</h1>
+<!-- ── SIDEBAR ───────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">THREAD<span>LINE</span></div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="/dashboard">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" href="/add_design">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M6 9h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Add Design
+    </a>
+    <a class="nav-item" href="/sales_analysis">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 14l4-5 4 3 4-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Sales Analysis
+    </a>
+    <a class="nav-item" href="/change_password">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="4" y="8" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M6 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Change Password
+    </a>
+    <a class="nav-item" href="/" target="_blank">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 3H3a1 1 0 00-1 1v11a1 1 0 001 1h11a1 1 0 001-1v-4M10 3h5m0 0v5m0-5L8 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      View Store
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a class="logout-btn" href="/logout">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Logout
+    </a>
+  </div>
+</aside>
 
-<div style="text-align:center;margin-bottom:20px;">
-<a class="btn" href="/add_design">Upload Design</a>
-<a class="btn" href="/logout">Logout</a>
-</div>
+<!-- ── MAIN ──────────────────────────────────────────────── -->
+<main class="main">
 
-<div class="grid">
-{% for o in orders %}
-<div class="card">
-<p><b>{{o.design}}</b></p>
-<p>Size: {{o.size}}</p>
-<p>Qty: {{o.quantity}}</p>
-<p>{{o.phone}}</p>
-<p>Status: {{o.status}}</p>
-<img src="/static/uploads/{{o.payment_image}}">
-{% if o.status != 'Completed' %}
-<a class="btn" href="/complete/{{o.id}}">Mark Completed</a>
-{% endif %}
-</div>
-{% endfor %}
-</div>
+  <div class="page-header">
+    <p class="page-eyebrow">Admin Panel</p>
+    <h1 class="page-title">Dashboard</h1>
+  </div>
 
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <p class="stat-label">Pending Orders</p>
+      <div class="stat-value orange">{{ pending_orders|length }}</div>
+      <p class="stat-sub">Awaiting processing</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Completed Orders</p>
+      <div class="stat-value green">{{ completed_orders|length }}</div>
+      <p class="stat-sub">Successfully fulfilled</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Total Designs</p>
+      <div class="stat-value orange">{{ designs|length }}</div>
+      <p class="stat-sub">In catalog</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">In Stock</p>
+      <div class="stat-value">{{ designs|selectattr('stock','equalto','In Stock')|list|length }}</div>
+      <p class="stat-sub">Available now</p>
+    </div>
+  </div>
+
+  <!-- PHONEPE SETTINGS -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-name">PhonePe Settings</span>
+    </div>
+    <form class="settings-form" method="POST" action="/update_phonepe">
+      <div class="settings-field">
+        <label>Account Name</label>
+        <input name="name" value="{{ settings.phonepe_name }}" placeholder="Name on PhonePe">
+      </div>
+      <div class="settings-field">
+        <label>Phone Number</label>
+        <input name="number" value="{{ settings.phonepe_number }}" placeholder="10-digit number">
+      </div>
+      <button class="btn-orange" type="submit">Update</button>
+    </form>
+  </div>
+
+  <!-- ── PENDING ORDERS TABLE ───────────────────────────── -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-name">Pending Orders</span>
+      <span class="section-badge badge-orange">{{ pending_orders|length }} Pending</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Design</th><th>Customer</th><th>Address</th>
+            <th>Phone</th><th>Email</th><th>Size</th><th>Qty</th>
+            <th>Payment</th><th>Invoice</th><th>Status</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in pending_orders %}
+          <tr>
+            <td class="td-id">#{{ o.id }}</td>
+            <td style="font-weight:500">{{ o.design }}<br><span class="td-muted">{{ o.design_code }}</span></td>
+            <td>{{ o.customer_name }}</td>
+            <td class="td-muted">{{ o.house }}, {{ o.city }},<br>{{ o.mandal }}</td>
+            <td>{{ o.phone }}</td>
+            <td class="td-muted">{{ o.email }}</td>
+            <td><span class="badge badge-size">{{ o.size }}</span></td>
+            <td>{{ o.quantity }}</td>
+            <td>
+              <a href="/static/uploads/{{ o.payment_image }}" target="_blank">
+                <img class="payment-thumb" src="/static/uploads/{{ o.payment_image }}">
+              </a>
+            </td>
+            <td><a class="action-link" href="/static/invoices/invoice_{{ o.id }}.pdf" target="_blank">Download</a></td>
+            <td><span class="badge badge-pending">Pending</span></td>
+            <td>
+              <a class="complete-btn" href="/complete_order/{{ o.id }}"
+                 onclick="return confirm('Mark order #{{ o.id }} as completed?')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <path d="M2 7l3 3 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Complete
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr class="empty-row">
+            <td colspan="12"><span>🎉</span>No pending orders — all caught up!</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── COMPLETED ORDERS TABLE ─────────────────────────── -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-name">Completed Orders</span>
+      <span class="section-badge badge-green">{{ completed_orders|length }} Completed</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Design</th><th>Customer</th><th>Address</th>
+            <th>Phone</th><th>Email</th><th>Size</th><th>Qty</th>
+            <th>Payment</th><th>Invoice</th><th>Completed At</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in completed_orders %}
+          <tr class="completed-row">
+            <td class="td-id">#{{ o.id }}</td>
+            <td style="font-weight:500">{{ o.design }}<br><span class="td-muted">{{ o.design_code }}</span></td>
+            <td>{{ o.customer_name }}</td>
+            <td class="td-muted">{{ o.house }}, {{ o.city }},<br>{{ o.mandal }}</td>
+            <td>{{ o.phone }}</td>
+            <td class="td-muted">{{ o.email }}</td>
+            <td><span class="badge badge-size">{{ o.size }}</span></td>
+            <td>{{ o.quantity }}</td>
+            <td>
+              <a href="/static/uploads/{{ o.payment_image }}" target="_blank">
+                <img class="payment-thumb" src="/static/uploads/{{ o.payment_image }}">
+              </a>
+            </td>
+            <td><a class="action-link" href="/static/invoices/invoice_{{ o.id }}.pdf" target="_blank">Download</a></td>
+            <td><span class="completed-at">{{ o.completed_at }}</span></td>
+            <td><span class="badge badge-completed">✓ Done</span></td>
+          </tr>
+          {% else %}
+          <tr class="empty-row">
+            <td colspan="12"><span>📦</span>No completed orders yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── DESIGN MANAGEMENT TABLE ───────────────────────── -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-name">Design Management</span>
+      <a class="btn-orange" href="/add_design" style="padding:10px 20px;font-size:0.72rem">+ Add Design</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Image</th><th>Code</th><th>Name</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for d in designs %}
+          <tr>
+            <td><img class="design-img" src="/static/uploads/{{ d.image }}"></td>
+            <td class="td-id">{{ d.design_code }}</td>
+            <td style="font-weight:500">{{ d.name }}</td>
+            <td style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--orange)">₹{{ d.price }}</td>
+            <td><span class="{% if d.stock=='In Stock' %}stock-in{% else %}stock-out{% endif %}">{{ d.stock }}</span></td>
+            <td>
+              <a class="action-link" href="/toggle_stock/{{ d.id }}">Toggle Stock</a>
+              <span class="action-sep">|</span>
+              <a class="action-link danger" href="/delete_design/{{ d.id }}" onclick="return confirm('Delete this design?')">Delete</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="6"><span>🎨</span>No designs added yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
 </body>
 </html>
