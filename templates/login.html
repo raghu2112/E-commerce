@@ -6,56 +6,28 @@
 <title>THREADLINE — Admin Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --orange:#FF6B00; --dark:#0A0A0A; --card:#111; --text:#F0EDE8; --muted:#666; --border:rgba(255,255,255,0.08); }
+  :root{--orange:#FF6B00;--dark:#0A0A0A;--card:#111;--text:#F0EDE8;--muted:#666;--border:rgba(255,255,255,0.08);--red:#ef4444;}
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-  /* Animated BG */
-  .bg {
-    position:fixed; inset:0;
-    background:
-      radial-gradient(ellipse 50% 60% at 80% 20%, rgba(255,107,0,0.08), transparent),
-      radial-gradient(ellipse 40% 50% at 10% 80%, rgba(255,107,0,0.05), transparent),
-      #0A0A0A;
-  }
-  .bg-lines {
-    position:fixed; inset:0;
-    background-image: repeating-linear-gradient(
-      -45deg, transparent, transparent 80px,
-      rgba(255,107,0,0.02) 80px, rgba(255,107,0,0.02) 81px
-    );
-  }
-  /* CARD */
-  .card {
-    position:relative; z-index:10;
-    background:var(--card); border:1px solid var(--border);
-    padding:52px 48px; width:100%; max-width:420px; border-radius:4px;
-    animation: slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,107,0,0.05);
-  }
-  @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-  .card-logo { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:0.1em; margin-bottom:36px; }
-  .card-logo span { color:var(--orange); }
-  .card-eyebrow { font-size:0.65rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--orange); font-weight:700; margin-bottom:10px; }
-  .card h2 { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; letter-spacing:0.04em; margin-bottom:36px; line-height:1; }
-  .field { position:relative; margin-bottom:20px; }
-  .field label { display:block; font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase; font-weight:600; color:var(--muted); margin-bottom:10px; }
-  .field input {
-    width:100%; background:#1a1a1a; border:1px solid var(--border); color:var(--text);
-    padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:0.95rem;
-    border-radius:3px; outline:none; transition:all 0.25s;
-  }
-  .field input:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(255,107,0,0.12); background:#1d1d1d; }
-  .submit-btn {
-    width:100%; background:var(--orange); color:#000; border:none;
-    padding:15px; font-family:'DM Sans',sans-serif; font-size:0.82rem;
-    font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
-    border-radius:3px; cursor:pointer; margin-top:8px;
-    transition:all 0.25s; box-shadow:0 0 30px rgba(255,107,0,0.3);
-  }
-  .submit-btn:hover { background:#ff7d1a; box-shadow:0 4px 40px rgba(255,107,0,0.5); transform:translateY(-1px); }
-  .back-link { display:block; text-align:center; margin-top:22px; color:var(--muted); font-size:0.8rem; text-decoration:none; letter-spacing:0.05em; transition:color 0.2s; }
-  .back-link:hover { color:var(--orange); }
-  .card-footer { margin-top:40px; padding-top:24px; border-top:1px solid var(--border); font-size:0.72rem; color:var(--muted); letter-spacing:0.04em; }
+  body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .bg{position:fixed;inset:0;background:radial-gradient(ellipse 50% 60% at 80% 20%,rgba(255,107,0,.08),transparent),radial-gradient(ellipse 40% 50% at 10% 80%,rgba(255,107,0,.05),transparent),#0A0A0A;}
+  .bg-lines{position:fixed;inset:0;background-image:repeating-linear-gradient(-45deg,transparent,transparent 80px,rgba(255,107,0,.02) 80px,rgba(255,107,0,.02) 81px);}
+  .card{position:relative;z-index:10;background:var(--card);border:1px solid var(--border);padding:52px 48px;width:100%;max-width:420px;border-radius:4px;animation:slideUp .7s cubic-bezier(.16,1,.3,1) forwards;box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,107,0,.05);}
+  @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  .card-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.1em;margin-bottom:36px;}
+  .card-logo span{color:var(--orange);}
+  .card-eyebrow{font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:10px;}
+  .card h2{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.04em;margin-bottom:28px;line-height:1;}
+  .error-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:3px;padding:12px 16px;font-size:.82rem;color:var(--red);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+  .field{position:relative;margin-bottom:20px;}
+  .field label{display:block;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:var(--muted);margin-bottom:10px;}
+  .field input{width:100%;background:#1a1a1a;border:1px solid var(--border);color:var(--text);padding:14px 18px;font-family:'DM Sans',sans-serif;font-size:.95rem;border-radius:3px;outline:none;transition:all .25s;}
+  .field input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.12);background:#1d1d1d;}
+  .submit-btn{width:100%;background:var(--orange);color:#000;border:none;padding:15px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border-radius:3px;cursor:pointer;margin-top:8px;transition:all .25s;box-shadow:0 0 30px rgba(255,107,0,.3);}
+  .submit-btn:hover{background:#ff7d1a;box-shadow:0 4px 40px rgba(255,107,0,.5);transform:translateY(-1px);}
+  .back-link{display:block;text-align:center;margin-top:22px;color:var(--muted);font-size:.8rem;text-decoration:none;letter-spacing:.05em;transition:color .2s;}
+  .back-link:hover{color:var(--orange);}
+  .card-footer{margin-top:40px;padding-top:24px;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);}
+  .session-note{margin-top:10px;font-size:.72rem;color:var(--muted);text-align:center;}
 </style>
 </head>
 <body>
@@ -65,14 +37,25 @@
   <div class="card-logo">THREAD<span>LINE</span></div>
   <p class="card-eyebrow">Restricted Access</p>
   <h2>Admin<br>Login</h2>
+
+  {% if error %}
+  <div class="error-box">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    {{ error }}
+  </div>
+  {% endif %}
+
   <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="field">
       <label>Password</label>
       <input type="password" name="password" placeholder="Enter admin password" autocomplete="current-password" required>
     </div>
     <button class="submit-btn">Sign In →</button>
   </form>
+
   <a class="back-link" href="/">← Back to Store</a>
+  <p class="session-note">Session auto-expires after 30 minutes of inactivity.</p>
   <p class="card-footer">Protected area. Authorized personnel only.</p>
 </div>
 </body>
