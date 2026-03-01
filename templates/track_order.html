@@ -69,6 +69,8 @@
   }
   .tl-step.done:not(:last-child)::after  {background:var(--green);}
   .tl-step.active:not(:last-child)::after{background:var(--border);}
+  /* Cancelled branch — connector between Placed and Cancelled dot is muted red */
+  .cancelled-timeline .tl-step.done:not(:last-child)::after{background:rgba(239,68,68,.3);}
 
   .tl-dot{
     width:28px;height:28px;border-radius:50%;
@@ -137,11 +139,11 @@
       {% for o in orders %}
 
       {# ── Determine timeline state for each stage ── #}
-      {% set stages = ['Pending','Verifying','Processing','Shipped','Completed'] %}
+      {% set stage_map = {'Pending': 0, 'Verifying': 1, 'Processing': 2, 'Shipped': 3, 'Completed': 4} %}
       {% if o.status == 'Cancelled' %}
         {% set current_idx = -1 %}
       {% else %}
-        {% set current_idx = stages.index(o.status) if o.status in stages else 0 %}
+        {% set current_idx = stage_map[o.status] if o.status in stage_map else 0 %}
       {% endif %}
 
       <div class="order-card">
@@ -183,7 +185,7 @@
 
           {% if o.status == 'Cancelled' %}
           <!-- Cancelled branch -->
-          <div class="timeline">
+          <div class="timeline cancelled-timeline">
             <div class="tl-step done">
               <div class="tl-dot">✓</div>
               <span class="tl-label">Placed</span>
