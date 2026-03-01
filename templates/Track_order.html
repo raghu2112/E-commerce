@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THREADLINE — Track Your Order</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--orange:#FF6B00;--dark:#0A0A0A;--card:#111;--text:#F0EDE8;--muted:#666;--border:rgba(255,255,255,0.08);--green:#22c55e;--red:#ef4444;--yellow:#eab308;--blue:#3b82f6;--purple:#a855f7;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;padding:48px 20px;}
+  .bg{position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 30%,rgba(255,107,0,0.07),transparent);pointer-events:none;}
+  .wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;}
+  .back-link{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;margin-bottom:40px;transition:color .2s;}
+  .back-link:hover{color:var(--orange);}
+  .eyebrow{font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:10px;}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5.5rem);letter-spacing:.04em;line-height:.9;margin-bottom:16px;}
+  .subtitle{color:var(--muted);font-size:.92rem;line-height:1.6;margin-bottom:48px;}
+
+  /* SEARCH */
+  .search-card{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:36px;margin-bottom:36px;box-shadow:0 20px 60px rgba(0,0,0,0.4);}
+  .field label{display:block;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:9px;}
+  .search-row{display:flex;gap:12px;}
+  .search-row input{flex:1;background:#1a1a1a;border:1px solid var(--border);color:var(--text);padding:14px 18px;font-family:'DM Sans',sans-serif;font-size:.95rem;border-radius:3px;outline:none;transition:all .25s;}
+  .search-row input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.12);}
+  .search-row input::placeholder{color:var(--muted);}
+  .search-btn{background:var(--orange);color:#000;border:none;padding:14px 28px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all .25s;white-space:nowrap;box-shadow:0 0 30px rgba(255,107,0,.25);}
+  .search-btn:hover{background:#ff7d1a;transform:translateY(-2px);}
+
+  /* RESULTS */
+  .results-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.05em;margin-bottom:16px;}
+  .no-results{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:52px;text-align:center;color:var(--muted);}
+  .no-results-icon{font-size:2.5rem;margin-bottom:16px;opacity:.4;}
+  .no-results p{font-size:.9rem;}
+
+  /* ORDER CARD */
+  .order-card{background:var(--card);border:1px solid var(--border);border-radius:4px;margin-bottom:20px;overflow:hidden;animation:cardIn .5s cubic-bezier(.16,1,.3,1) both;}
+  .order-card:nth-child(1){animation-delay:.05s}.order-card:nth-child(2){animation-delay:.1s}.order-card:nth-child(3){animation-delay:.15s}
+  @keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  .order-card-head{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+  .order-id{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;}
+  .order-id span{color:var(--orange);}
+
+  /* Status badges */
+  .status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:2px;font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;}
+  .s-pending   {background:rgba(255,107,0,.12);  color:var(--orange);}
+  .s-verifying {background:rgba(234,179,8,.12);  color:var(--yellow);}
+  .s-processing{background:rgba(59,130,246,.12); color:var(--blue);}
+  .s-shipped   {background:rgba(168,85,247,.12); color:var(--purple);}
+  .s-completed {background:rgba(34,197,94,.1);   color:var(--green);}
+  .s-cancelled {background:rgba(239,68,68,.1);   color:var(--red);}
+
+  .order-card-body{padding:18px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;}
+  .info-group label{display:block;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px;}
+  .info-group p{font-size:.88rem;color:var(--text);}
+
+  /* TIMELINE */
+  .order-card-foot{padding:22px 24px;border-top:1px solid var(--border);background:rgba(255,255,255,.01);}
+  .timeline-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:16px;}
+  .timeline{display:flex;align-items:flex-start;position:relative;}
+
+  .tl-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
+  /* Connector line between dots */
+  .tl-step:not(:last-child)::after{
+    content:'';position:absolute;
+    top:14px;left:calc(50% + 14px);right:calc(-50% + 14px);
+    height:2px;background:var(--border);z-index:0;
+  }
+  .tl-step.done:not(:last-child)::after  {background:var(--green);}
+  .tl-step.active:not(:last-child)::after{background:var(--border);}
+
+  .tl-dot{
+    width:28px;height:28px;border-radius:50%;
+    border:2px solid var(--border);background:var(--dark);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;z-index:1;font-size:.7rem;
+    transition:all .4s;
+  }
+  .tl-step.done   .tl-dot{border-color:var(--green); background:rgba(34,197,94,.12); color:var(--green);}
+  .tl-step.active .tl-dot{border-color:var(--orange);background:rgba(255,107,0,.12);color:var(--orange);box-shadow:0 0 0 4px rgba(255,107,0,.1);}
+
+  /* Per-step active colour overrides */
+  .tl-step.active.step-verifying  .tl-dot{border-color:var(--yellow); background:rgba(234,179,8,.12); color:var(--yellow); box-shadow:0 0 0 4px rgba(234,179,8,.1);}
+  .tl-step.active.step-processing .tl-dot{border-color:var(--blue);   background:rgba(59,130,246,.12);color:var(--blue);   box-shadow:0 0 0 4px rgba(59,130,246,.1);}
+  .tl-step.active.step-shipped    .tl-dot{border-color:var(--purple); background:rgba(168,85,247,.12);color:var(--purple); box-shadow:0 0 0 4px rgba(168,85,247,.1);}
+  .tl-step.active.step-completed  .tl-dot{border-color:var(--green);  background:rgba(34,197,94,.12); color:var(--green);  box-shadow:0 0 0 4px rgba(34,197,94,.1);}
+  .tl-step.cancelled .tl-dot{border-color:var(--red);background:rgba(239,68,68,.1);color:var(--red);}
+
+  .tl-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:8px;text-align:center;line-height:1.4;}
+  .tl-step.done     .tl-label{color:var(--green);}
+  .tl-step.active.step-pending    .tl-label{color:var(--orange);}
+  .tl-step.active.step-verifying  .tl-label{color:var(--yellow);}
+  .tl-step.active.step-processing .tl-label{color:var(--blue);}
+  .tl-step.active.step-shipped    .tl-label{color:var(--purple);}
+  .tl-step.active.step-completed  .tl-label{color:var(--green);}
+  .tl-step.cancelled .tl-label{color:var(--red);}
+
+  .tl-sub{font-size:.55rem;color:var(--muted);margin-top:3px;text-align:center;}
+
+  @media(max-width:600px){
+    .search-row{flex-direction:column;}
+    .tl-label{font-size:.52rem;letter-spacing:.06em;}
+  }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="wrap">
+
+  <a class="back-link" href="/">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M3 8L7 4M3 8L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to Store
+  </a>
+
+  <p class="eyebrow">Order Status</p>
+  <h1>TRACK<br>YOUR<br>ORDER</h1>
+  <p class="subtitle">Enter the phone number you used when placing your order<br>to see all your orders and their live status.</p>
+
+  <!-- SEARCH -->
+  <div class="search-card">
+    <div class="field">
+      <label>Your Phone Number</label>
+      <form method="POST" class="search-row">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="tel" name="phone" placeholder="e.g. 9876543210" value="{{ phone }}" required>
+        <button class="search-btn" type="submit">Track →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  {% if searched %}
+    {% if orders %}
+      <p class="results-title">Found {{ orders|length }} Order{% if orders|length != 1 %}s{% endif %}</p>
+
+      {% for o in orders %}
+
+      {# ── Determine timeline state for each stage ── #}
+      {% set stages = ['Pending','Verifying','Processing','Shipped','Completed'] %}
+      {% if o.status == 'Cancelled' %}
+        {% set current_idx = -1 %}
+      {% else %}
+        {% set current_idx = stages.index(o.status) if o.status in stages else 0 %}
+      {% endif %}
+
+      <div class="order-card">
+
+        <!-- Head -->
+        <div class="order-card-head">
+          <span class="order-id">Order <span>#{{ o.id }}</span></span>
+          <span class="status-badge s-{{ o.status|lower }}">
+            {% if o.status == 'Completed' %}✓ Delivered
+            {% elif o.status == 'Cancelled' %}✕ Cancelled
+            {% elif o.status == 'Shipped' %}🚚 Shipped
+            {% elif o.status == 'Processing' %}⚙ Processing
+            {% elif o.status == 'Verifying' %}🔍 Verifying Payment
+            {% else %}⏳ Order Placed
+            {% endif %}
+          </span>
+        </div>
+
+        <!-- Body -->
+        <div class="order-card-body">
+          <div class="info-group"><label>Design</label><p>{{ o.design }}</p></div>
+          <div class="info-group"><label>Size</label><p>{{ o.size }}</p></div>
+          <div class="info-group"><label>Quantity</label><p>{{ o.quantity }}</p></div>
+          <div class="info-group"><label>Placed At</label><p>{{ o.created_at or 'N/A' }}</p></div>
+          {% if o.status_updated_at and o.status not in ['Completed','Cancelled'] %}
+          <div class="info-group"><label>Last Updated</label><p>{{ o.status_updated_at }}</p></div>
+          {% endif %}
+          {% if o.completed_at %}
+          <div class="info-group"><label>Delivered</label><p style="color:var(--green)">{{ o.completed_at }}</p></div>
+          {% endif %}
+          {% if o.cancelled_at %}
+          <div class="info-group"><label>Cancelled At</label><p style="color:var(--red)">{{ o.cancelled_at }}</p></div>
+          {% endif %}
+        </div>
+
+        <!-- Timeline -->
+        <div class="order-card-foot">
+          <p class="timeline-label">Order Progress</p>
+
+          {% if o.status == 'Cancelled' %}
+          <!-- Cancelled branch -->
+          <div class="timeline">
+            <div class="tl-step done">
+              <div class="tl-dot">✓</div>
+              <span class="tl-label">Placed</span>
+            </div>
+            <div class="tl-step cancelled">
+              <div class="tl-dot">✕</div>
+              <span class="tl-label">Cancelled</span>
+              {% if o.cancelled_at %}<span class="tl-sub">{{ o.cancelled_at }}</span>{% endif %}
+            </div>
+          </div>
+
+          {% else %}
+          <!-- Normal 5-stage timeline -->
+          <div class="timeline">
+
+            {# Stage 0: Placed / Pending #}
+            {% set s_idx = 0 %}
+            <div class="tl-step {% if current_idx > s_idx %}done{% elif current_idx == s_idx %}active step-pending{% endif %}">
+              <div class="tl-dot">{% if current_idx > s_idx %}✓{% else %}●{% endif %}</div>
+              <span class="tl-label">Placed</span>
+              {% if o.created_at and current_idx == s_idx %}<span class="tl-sub">{{ o.created_at }}</span>{% endif %}
+            </div>
+
+            {# Stage 1: Verifying #}
+            {% set s_idx = 1 %}
+            <div class="tl-step {% if current_idx > s_idx %}done{% elif current_idx == s_idx %}active step-verifying{% endif %}">
+              <div class="tl-dot">{% if current_idx > s_idx %}✓{% elif current_idx == s_idx %}🔍{% else %}○{% endif %}</div>
+              <span class="tl-label">Verifying<br>Payment</span>
+              {% if o.status_updated_at and current_idx == s_idx %}<span class="tl-sub">{{ o.status_updated_at }}</span>{% endif %}
+            </div>
+
+            {# Stage 2: Processing #}
+            {% set s_idx = 2 %}
+            <div class="tl-step {% if current_idx > s_idx %}done{% elif current_idx == s_idx %}active step-processing{% endif %}">
+              <div class="tl-dot">{% if current_idx > s_idx %}✓{% elif current_idx == s_idx %}⚙{% else %}○{% endif %}</div>
+              <span class="tl-label">Processing</span>
+              {% if o.status_updated_at and current_idx == s_idx %}<span class="tl-sub">{{ o.status_updated_at }}</span>{% endif %}
+            </div>
+
+            {# Stage 3: Shipped #}
+            {% set s_idx = 3 %}
+            <div class="tl-step {% if current_idx > s_idx %}done{% elif current_idx == s_idx %}active step-shipped{% endif %}">
+              <div class="tl-dot">{% if current_idx > s_idx %}✓{% elif current_idx == s_idx %}🚚{% else %}○{% endif %}</div>
+              <span class="tl-label">Shipped</span>
+              {% if o.status_updated_at and current_idx == s_idx %}<span class="tl-sub">{{ o.status_updated_at }}</span>{% endif %}
+            </div>
+
+            {# Stage 4: Completed / Delivered #}
+            {% set s_idx = 4 %}
+            <div class="tl-step {% if current_idx >= s_idx %}active step-completed{% endif %}">
+              <div class="tl-dot">{% if current_idx >= s_idx %}✓{% else %}○{% endif %}</div>
+              <span class="tl-label">Delivered</span>
+              {% if o.completed_at %}<span class="tl-sub">{{ o.completed_at }}</span>{% endif %}
+            </div>
+
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+
+    {% else %}
+      <div class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <p>No orders found for <strong>{{ phone }}</strong>.<br>Please check your phone number and try again.</p>
+      </div>
+    {% endif %}
+  {% endif %}
+
+</div>
+</body>
+</html>
