@@ -14,14 +14,25 @@
   /* LEFT */
   .left-panel{background:#0d0d0d;border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;padding:60px 52px;position:sticky;top:0;height:100vh;animation:panelIn .8s cubic-bezier(.16,1,.3,1) forwards;}
   @keyframes panelIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
-  .back-link{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;margin-bottom:48px;transition:color .2s;}
+  .back-link{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;margin-bottom:32px;transition:color .2s;}
   .back-link:hover{color:var(--orange);}
-  .product-img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:4px;margin-bottom:32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.5);}
+
+  /* Product carousel */
+  .product-carousel{position:relative;width:100%;aspect-ratio:4/5;border-radius:4px;overflow:hidden;margin-bottom:24px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .carousel-track{display:flex;height:100%;transition:transform .4s cubic-bezier(.16,1,.3,1);}
+  .carousel-slide{min-width:100%;height:100%;flex-shrink:0;}
+  .carousel-slide img{width:100%;height:100%;object-fit:cover;display:block;}
+  .car-btn{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:5;}
+  .car-btn:hover{background:var(--orange);border-color:var(--orange);}
+  .car-btn.prev{left:10px;}.car-btn.next{right:10px;}
+  .car-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:5;}
+  .car-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .25s;}
+  .car-dot.active{background:#fff;width:14px;border-radius:3px;}
+
   .product-code{font-size:.63rem;letter-spacing:.28em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:8px;}
   .product-name{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.04em;margin-bottom:8px;line-height:1;}
   .product-price{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--orange);margin-bottom:8px;}
-  .product-stock{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:24px;}
-  .stock-qty{color:var(--muted);}
+  .product-stock{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:24px;color:var(--muted);}
   .payment-info{background:#161616;border:1px solid var(--border);border-radius:4px;padding:22px;}
   .payment-info-title{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;}
   .payment-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;margin-bottom:4px;}
@@ -52,12 +63,24 @@
   .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23777' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
   .field input:focus,.field select:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.12);background:#1d1d1d;}
   .field input::placeholder{color:var(--muted);}
-  .upload-area{width:100%;border:2px dashed var(--border);border-radius:4px;padding:28px;text-align:center;cursor:pointer;transition:all .25s;background:var(--input-bg);}
-  .upload-area:hover{border-color:var(--orange);background:#1d1410;}
-  .upload-area input[type=file]{display:none;}
-  .upload-icon{width:40px;height:40px;margin:0 auto 12px;opacity:.4;}
-  .upload-text{font-size:.82rem;color:var(--muted);margin-bottom:4px;}
-  .upload-hint{font-size:.7rem;color:#555;letter-spacing:.06em;}
+  /* ── Upload area ── */
+  #payFile{display:none !important;}
+  .upload-zone{width:100%;border:2px dashed var(--border);border-radius:4px;padding:32px 20px;text-align:center;cursor:pointer;transition:border-color .25s,background .25s;background:var(--input-bg);box-sizing:border-box;}
+  .upload-zone:hover,.upload-zone.drag-over{border-color:var(--orange);background:#1d1410;}
+  .upload-zone.has-file{border-color:rgba(34,197,94,.4);background:#111;padding:16px;}
+  .upload-icon-wrap{width:48px;height:48px;margin:0 auto 14px;opacity:.35;}
+  .upload-main-text{font-size:.85rem;color:var(--text);font-weight:500;margin-bottom:4px;}
+  .upload-sub-text{font-size:.72rem;color:var(--muted);letter-spacing:.04em;}
+  .upload-zone-idle{transition:all .2s;}
+  /* Preview */
+  .preview-wrap{display:none;flex-direction:column;align-items:center;gap:10px;}
+  .upload-zone.has-file .upload-zone-idle{display:none;}
+  .upload-zone.has-file .preview-wrap{display:flex;}
+  .preview-img{width:120px;height:120px;object-fit:cover;border-radius:4px;border:1px solid rgba(34,197,94,.3);box-shadow:0 4px 20px rgba(0,0,0,.5);}
+  .preview-name{font-size:.78rem;color:#22c55e;font-weight:600;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .preview-size{font-size:.68rem;color:var(--muted);}
+  .preview-change{font-size:.72rem;color:var(--orange);font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;background:none;border:none;padding:4px 0;font-family:'DM Sans',sans-serif;}
+  .preview-change:hover{opacity:.7;}
   .submit-btn{width:100%;background:var(--orange);color:#000;border:none;padding:17px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border-radius:3px;cursor:pointer;margin-top:16px;transition:all .3s;box-shadow:0 0 40px rgba(255,107,0,.3);display:flex;align-items:center;justify-content:center;gap:10px;}
   .submit-btn:hover{background:#ff7d1a;box-shadow:0 4px 50px rgba(255,107,0,.5);transform:translateY(-2px);}
   .track-note{margin-top:20px;text-align:center;font-size:.78rem;color:var(--muted);}
@@ -74,11 +97,41 @@
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M3 8L7 4M3 8L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Back to Store
     </a>
-    <img class="product-img" src="/static/uploads/{{design.image}}" alt="{{design.name}}">
+
+    <!-- Product image carousel -->
+    <div class="product-carousel" id="orderCarousel">
+      <div class="carousel-track" id="orderTrack">
+        {% if design.images %}
+          {% for img in design.images %}
+          <div class="carousel-slide">
+            <img src="/static/uploads/{{ img.filename }}" alt="{{ design.name }}" loading="{% if loop.first %}eager{% else %}lazy{% endif %}">
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="carousel-slide">
+            <img src="/static/uploads/{{ design.image }}" alt="{{ design.name }}">
+          </div>
+        {% endif %}
+      </div>
+      {% if design.images|length > 1 %}
+      <button class="car-btn prev" onclick="orderSlide(-1)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L3 6l5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="car-btn next" onclick="orderSlide(1)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l5 4-5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="car-dots" id="orderDots">
+        {% for img in design.images %}
+        <span class="car-dot {% if loop.first %}active{% endif %}" onclick="orderGoTo({{ loop.index0 }})"></span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
     <p class="product-code">#{{design.design_code}}</p>
     <h2 class="product-name">{{design.name}}</h2>
     <p class="product-price">₹{{design.price}}</p>
-    <p class="product-stock stock-qty">{{ design.stock_quantity }} unit{% if design.stock_quantity != 1 %}s{% endif %} left</p>
+    <p class="product-stock">{{ design.stock_quantity }} unit{% if design.stock_quantity != 1 %}s{% endif %} left</p>
     <div class="payment-info">
       <p class="payment-info-title">Send Payment To</p>
       <p class="payment-name">{{settings.phonepe_name}}</p>
@@ -124,6 +177,7 @@
           <div class="field full"><label>House / Flat No.</label><input name="house" placeholder="House no, Street name" required></div>
           <div class="field"><label>City</label><input name="city" placeholder="City" required></div>
           <div class="field"><label>Mandal</label><input name="mandal" placeholder="Mandal" required></div>
+          <div class="field full"><label>Pincode</label><input name="pincode" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit pincode" required></div>
         </div>
       </div>
 
@@ -141,12 +195,38 @@
 
       <div class="form-section">
         <p class="form-section-title">Payment Proof</p>
-        <label class="upload-area" for="payFile">
-          <input type="file" id="payFile" name="payment" accept="image/png,image/jpg,image/jpeg,image/gif,image/webp" onchange="updateLabel(this)" required>
-          <svg class="upload-icon" width="44" height="44" viewBox="0 0 44 44" fill="none"><rect x="4" y="10" width="36" height="28" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M20 32V18M20 18L14 24M20 18L26 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="17" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
-          <p class="upload-text" id="uploadText">Upload Payment Screenshot</p>
-          <p class="upload-hint">PNG, JPG, JPEG, GIF, WEBP only</p>
-        </label>
+
+        <!-- Hidden file input — completely separate from the visual zone -->
+        <input type="file" id="payFile" name="payment"
+               accept="image/png,image/jpg,image/jpeg,image/gif,image/webp"
+               required>
+
+        <!-- Visual click/drop zone -->
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('payFile').click()">
+
+          <!-- Idle state (no file selected) -->
+          <div class="upload-zone-idle">
+            <svg class="upload-icon-wrap" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="12" width="40" height="30" rx="4" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M24 38V22M24 22L16 30M24 22L32 30" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 12V10a2 2 0 012-2h16a2 2 0 012 2v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <p class="upload-main-text">Click to upload payment screenshot</p>
+            <p class="upload-sub-text">PNG · JPG · JPEG · GIF · WEBP · Max 5 MB</p>
+          </div>
+
+          <!-- Preview state (file selected) -->
+          <div class="preview-wrap" id="previewWrap">
+            <img id="previewImg" class="preview-img" src="" alt="Payment screenshot preview">
+            <p class="preview-name" id="previewName"></p>
+            <p class="preview-size" id="previewSize"></p>
+            <button type="button" class="preview-change"
+                    onclick="event.stopPropagation(); document.getElementById('payFile').click()">
+              ↑ Change file
+            </button>
+          </div>
+
+        </div>
       </div>
 
       <button class="submit-btn" type="submit">
@@ -158,10 +238,79 @@
   </div>
 </div>
 <script>
-function updateLabel(input) {
-  if(input.files && input.files[0])
-    document.getElementById('uploadText').textContent = '✓ ' + input.files[0].name;
+// ── Payment upload zone ─────────────────────────────────────────────────────
+const payFile   = document.getElementById('payFile');
+const uploadZone = document.getElementById('uploadZone');
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
+
+function applyFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('previewImg').src  = e.target.result;
+    document.getElementById('previewName').textContent = file.name;
+    document.getElementById('previewSize').textContent = formatBytes(file.size);
+    uploadZone.classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+}
+
+// File input change
+payFile.addEventListener('change', () => {
+  if (payFile.files && payFile.files[0]) applyFile(payFile.files[0]);
+});
+
+// Drag & drop
+uploadZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  uploadZone.classList.add('drag-over');
+});
+uploadZone.addEventListener('dragleave', () => {
+  uploadZone.classList.remove('drag-over');
+});
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  const files = e.dataTransfer.files;
+  if (!files || !files[0]) return;
+  // Inject dropped file into the hidden input via DataTransfer
+  try {
+    const dt = new DataTransfer();
+    dt.items.add(files[0]);
+    payFile.files = dt.files;
+  } catch (_) {}
+  applyFile(files[0]);
+});
+
+// Order page carousel
+let orderIdx = 0;
+const orderTotal = {{ design.images|length if design.images else 1 }};
+
+function orderSlide(dir) {
+  orderIdx = (orderIdx + dir + orderTotal) % orderTotal;
+  orderUpdate();
+}
+function orderGoTo(i) {
+  orderIdx = i;
+  orderUpdate();
+}
+function orderUpdate() {
+  document.getElementById('orderTrack').style.transform = `translateX(-${orderIdx * 100}%)`;
+  document.querySelectorAll('#orderDots .car-dot').forEach((d,i) => d.classList.toggle('active', i === orderIdx));
+}
+
+// Touch swipe on product carousel
+let ts = 0;
+document.getElementById('orderCarousel').addEventListener('touchstart', e => ts = e.touches[0].clientX, {passive:true});
+document.getElementById('orderCarousel').addEventListener('touchend', e => {
+  const diff = ts - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 40) orderSlide(diff > 0 ? 1 : -1);
+}, {passive:true});
 </script>
 </body>
 </html>
