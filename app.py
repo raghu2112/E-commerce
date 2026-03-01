@@ -120,8 +120,8 @@ def safe_int(value, default=1, minimum=None, maximum=None):
 class Settings(db.Model):
     id             = db.Column(db.Integer, primary_key=True)
     admin_password = db.Column(db.String(200), default="")
-    phonepe_name   = db.Column(db.String(100), default="")
-    phonepe_number = db.Column(db.String(20),  default="")
+    phonepe_name   = db.Column(db.String(100), default="Your Name")
+    phonepe_number = db.Column(db.String(20),  default="9999999999")
     admin_whatsapp = db.Column(db.String(20),  default="")
     mail_username  = db.Column(db.String(200), default="")
     mail_password  = db.Column(db.String(200), default="")
@@ -349,7 +349,7 @@ Go to dashboard to update the order status.
 # ══════════════════════════════════════════════════════════════════════════════
 
 @app.route('/admin', methods=['GET', 'POST'])
-def admin_login():
+def admin():
     settings = Settings.query.first()
     error = None
     if request.method == 'POST':
@@ -453,6 +453,7 @@ def update_status(order_id):
 
     if new_status == 'Completed':
         o.completed_at = now
+        # If reverting from a forward state, keep completed_at set
     elif new_status == 'Cancelled':
         o.cancelled_at = now
         # Restore stock
@@ -464,7 +465,10 @@ def update_status(order_id):
             except Exception:
                 pass
     else:
+        # Non-terminal stage — clear any stale terminal timestamps from prior mistakes
         o.status_updated_at = now
+        o.completed_at  = None   # Clear if admin reverts from Completed
+        o.cancelled_at  = None   # Clear if admin reverts from Cancelled (also restores stock above)
 
     o.status = new_status
     db.session.commit()
@@ -528,7 +532,10 @@ def update_email_config():
         return redirect('/admin')
     s = Settings.query.first()
     s.mail_username = request.form.get('mail_username', '').strip()
-    s.mail_password = request.form.get('mail_password', '').strip()
+    # Only update password if a new one was entered (blank = keep existing)
+    new_pw = request.form.get('mail_password', '').strip()
+    if new_pw:
+        s.mail_password = new_pw
     s.admin_email   = request.form.get('admin_email', '').strip()
     db.session.commit()
     return redirect('/dashboard')
@@ -756,4 +763,7 @@ def create_invoice(o):
 # ══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000,debug=True)
+    # Never run with debug=True in production.
+    # Set FLASK_DEBUG=1 locally only.
+    debug_mode = os.environ.get('FLASK_DEBUG', '0') == '1'
+    app.run(debug=debug_mode)
