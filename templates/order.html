@@ -6,84 +6,71 @@
 <title>THREADLINE — Place Order</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --orange:#FF6B00; --dark:#0A0A0A; --card:#111; --text:#F0EDE8; --muted:#666; --border:rgba(255,255,255,0.08); --input-bg:#1a1a1a; }
+  :root{--orange:#FF6B00;--dark:#0A0A0A;--card:#111;--text:#F0EDE8;--muted:#666;--border:rgba(255,255,255,0.08);--input-bg:#1a1a1a;--red:#ef4444;--yellow:#eab308;}
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; }
-  .page-wrap { display:grid; grid-template-columns:1fr 1fr; min-height:100vh; }
-  /* LEFT PANEL */
-  .left-panel {
-    background:#0d0d0d; border-right:1px solid var(--border);
-    display:flex; flex-direction:column; justify-content:center;
-    padding:60px 52px; position:sticky; top:0; height:100vh;
-    animation: panelIn 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
-  }
-  @keyframes panelIn { from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)} }
-  .back-link { display:inline-flex; align-items:center; gap:8px; color:var(--muted); font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; margin-bottom:48px; transition:color 0.2s; }
-  .back-link:hover { color:var(--orange); }
-  .product-img {
-    width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:4px;
-    margin-bottom:32px; border:1px solid var(--border);
-    box-shadow:0 20px 60px rgba(0,0,0,0.5);
-  }
-  .product-code { font-size:0.63rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--orange); font-weight:700; margin-bottom:8px; }
-  .product-name { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; letter-spacing:0.04em; margin-bottom:8px; line-height:1; }
-  .product-price { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--orange); margin-bottom:24px; }
-  .payment-info { background:#161616; border:1px solid var(--border); border-radius:4px; padding:22px; }
-  .payment-info-title { font-size:0.65rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:14px; }
-  .payment-name { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:0.04em; margin-bottom:4px; }
-  .payment-num { font-size:1.1rem; color:var(--orange); font-weight:600; letter-spacing:0.1em; }
-  /* RIGHT PANEL */
-  .right-panel {
-    padding:60px 52px; overflow-y:auto;
-    animation: panelInR 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both;
-  }
-  @keyframes panelInR { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
-  .logo { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:0.1em; color:var(--text); text-decoration:none; display:block; margin-bottom:48px; }
-  .logo span { color:var(--orange); }
-  .form-eyebrow { font-size:0.65rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--orange); font-weight:700; margin-bottom:10px; }
-  .form-title { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; letter-spacing:0.04em; margin-bottom:40px; line-height:1; }
-  .form-section { margin-bottom:32px; }
-  .form-section-title { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:18px; padding-bottom:10px; border-bottom:1px solid var(--border); }
-  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .field { margin-bottom:14px; }
-  .field.full { grid-column:1/-1; }
-  .field label { display:block; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; font-weight:600; color:var(--muted); margin-bottom:8px; }
-  .field input, .field select, .field textarea {
-    width:100%; background:var(--input-bg); border:1px solid var(--border); color:var(--text);
-    padding:13px 16px; font-family:'DM Sans',sans-serif; font-size:0.92rem;
-    border-radius:3px; outline:none; transition:all 0.25s; appearance:none;
-  }
-  .field select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23777' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; }
-  .field input:focus, .field select:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(255,107,0,0.12); background:#1d1d1d; }
-  .field input::placeholder { color:var(--muted); }
-  .upload-area {
-    width:100%; border:2px dashed var(--border); border-radius:4px;
-    padding:28px; text-align:center; cursor:pointer;
-    transition:all 0.25s; background:var(--input-bg);
-  }
-  .upload-area:hover { border-color:var(--orange); background:#1d1410; }
-  .upload-area input[type=file] { display:none; }
-  .upload-icon { width:40px; height:40px; margin:0 auto 12px; opacity:0.4; }
-  .upload-text { font-size:0.82rem; color:var(--muted); margin-bottom:4px; }
-  .upload-hint { font-size:0.7rem; color:#555; letter-spacing:0.06em; }
-  .submit-btn {
-    width:100%; background:var(--orange); color:#000; border:none;
-    padding:17px; font-family:'DM Sans',sans-serif; font-size:0.85rem;
-    font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
-    border-radius:3px; cursor:pointer; margin-top:16px;
-    transition:all 0.3s; box-shadow:0 0 40px rgba(255,107,0,0.3);
-    display:flex; align-items:center; justify-content:center; gap:10px;
-  }
-  .submit-btn:hover { background:#ff7d1a; box-shadow:0 4px 50px rgba(255,107,0,0.5); transform:translateY(-2px); }
-  @media(max-width:900px){ .page-wrap{grid-template-columns:1fr} .left-panel{position:relative;height:auto;padding:36px 24px} .right-panel{padding:36px 24px} }
-  @media(max-width:540px){ .form-grid{grid-template-columns:1fr} }
+  body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;}
+  .page-wrap{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
+
+  /* LEFT */
+  .left-panel{background:#0d0d0d;border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;padding:60px 52px;position:sticky;top:0;height:100vh;animation:panelIn .8s cubic-bezier(.16,1,.3,1) forwards;}
+  @keyframes panelIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+  .back-link{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;margin-bottom:48px;transition:color .2s;}
+  .back-link:hover{color:var(--orange);}
+  .product-img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:4px;margin-bottom:32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .product-code{font-size:.63rem;letter-spacing:.28em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:8px;}
+  .product-name{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.04em;margin-bottom:8px;line-height:1;}
+  .product-price{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--orange);margin-bottom:8px;}
+  .product-stock{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:24px;}
+  .stock-qty{color:var(--muted);}
+  .payment-info{background:#161616;border:1px solid var(--border);border-radius:4px;padding:22px;}
+  .payment-info-title{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;}
+  .payment-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;margin-bottom:4px;}
+  .payment-num{font-size:1.1rem;color:var(--orange);font-weight:600;letter-spacing:.1em;}
+
+  /* RIGHT */
+  .right-panel{padding:60px 52px;overflow-y:auto;animation:panelInR .8s cubic-bezier(.16,1,.3,1) .1s both;}
+  @keyframes panelInR{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+  .logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.1em;color:var(--text);text-decoration:none;display:block;margin-bottom:48px;}
+  .logo span{color:var(--orange);}
+  .form-eyebrow{font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:10px;}
+  .form-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.04em;margin-bottom:36px;line-height:1;}
+
+  /* Alerts */
+  .alert{border-radius:3px;padding:14px 18px;font-size:.85rem;line-height:1.55;margin-bottom:24px;display:flex;align-items:flex-start;gap:12px;}
+  .alert-dup{background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.2);color:var(--yellow);}
+  .alert-err{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:var(--red);}
+  .alert svg{flex-shrink:0;margin-top:2px;}
+  .alert a{color:inherit;font-weight:600;}
+
+  .form-section{margin-bottom:28px;}
+  .form-section-title{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .field{margin-bottom:14px;}
+  .field.full{grid-column:1/-1;}
+  .field label{display:block;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--muted);margin-bottom:8px;}
+  .field input,.field select{width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:.92rem;border-radius:3px;outline:none;transition:all .25s;appearance:none;}
+  .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23777' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+  .field input:focus,.field select:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.12);background:#1d1d1d;}
+  .field input::placeholder{color:var(--muted);}
+  .upload-area{width:100%;border:2px dashed var(--border);border-radius:4px;padding:28px;text-align:center;cursor:pointer;transition:all .25s;background:var(--input-bg);}
+  .upload-area:hover{border-color:var(--orange);background:#1d1410;}
+  .upload-area input[type=file]{display:none;}
+  .upload-icon{width:40px;height:40px;margin:0 auto 12px;opacity:.4;}
+  .upload-text{font-size:.82rem;color:var(--muted);margin-bottom:4px;}
+  .upload-hint{font-size:.7rem;color:#555;letter-spacing:.06em;}
+  .submit-btn{width:100%;background:var(--orange);color:#000;border:none;padding:17px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border-radius:3px;cursor:pointer;margin-top:16px;transition:all .3s;box-shadow:0 0 40px rgba(255,107,0,.3);display:flex;align-items:center;justify-content:center;gap:10px;}
+  .submit-btn:hover{background:#ff7d1a;box-shadow:0 4px 50px rgba(255,107,0,.5);transform:translateY(-2px);}
+  .track-note{margin-top:20px;text-align:center;font-size:.78rem;color:var(--muted);}
+  .track-note a{color:var(--orange);text-decoration:none;font-weight:500;}
+
+  @media(max-width:900px){.page-wrap{grid-template-columns:1fr}.left-panel{position:relative;height:auto;padding:36px 24px}.right-panel{padding:36px 24px}}
+  @media(max-width:540px){.form-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="page-wrap">
-  <!-- LEFT: Product Info -->
   <div class="left-panel">
-    <a href="/" class="back-link">
+    <a class="back-link" href="/">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M3 8L7 4M3 8L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Back to Store
     </a>
@@ -91,6 +78,7 @@
     <p class="product-code">#{{design.design_code}}</p>
     <h2 class="product-name">{{design.name}}</h2>
     <p class="product-price">₹{{design.price}}</p>
+    <p class="product-stock stock-qty">{{ design.stock_quantity }} unit{% if design.stock_quantity != 1 %}s{% endif %} left</p>
     <div class="payment-info">
       <p class="payment-info-title">Send Payment To</p>
       <p class="payment-name">{{settings.phonepe_name}}</p>
@@ -98,62 +86,55 @@
     </div>
   </div>
 
-  <!-- RIGHT: Order Form -->
   <div class="right-panel">
     <a class="logo" href="/">THREAD<span>LINE</span></a>
-    <p class="form-eyebrow">Step 1 of 1</p>
+    <p class="form-eyebrow">Order Form</p>
     <h1 class="form-title">Complete<br>Your Order</h1>
 
+    {% if duplicate %}
+    <div class="alert alert-dup">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5M8 10.5h.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span>You already have a <strong>pending order</strong> for this design with this phone number.
+      <a href="/track">Track your existing order →</a></span>
+    </div>
+    {% endif %}
+
+    {% if file_error %}
+    <div class="alert alert-err">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5M8 10.5h.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      {{ file_error }}
+    </div>
+    {% endif %}
+
     <form method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
       <div class="form-section">
         <p class="form-section-title">Personal Details</p>
         <div class="form-grid">
-          <div class="field full">
-            <label>Full Name</label>
-            <input name="customer_name" placeholder="Your full name" required>
-          </div>
-          <div class="field">
-            <label>Phone</label>
-            <input name="phone" placeholder="10-digit number" required>
-          </div>
-          <div class="field">
-            <label>Email</label>
-            <input type="email" name="email" placeholder="your@email.com" required>
-          </div>
+          <div class="field full"><label>Full Name</label><input name="customer_name" placeholder="Your full name" required></div>
+          <div class="field"><label>Phone</label><input name="phone" placeholder="10-digit number" required></div>
+          <div class="field"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
         </div>
       </div>
 
       <div class="form-section">
         <p class="form-section-title">Delivery Address</p>
         <div class="form-grid">
-          <div class="field full">
-            <label>House / Flat No.</label>
-            <input name="house" placeholder="House no, Street name" required>
-          </div>
-          <div class="field">
-            <label>City</label>
-            <input name="city" placeholder="City" required>
-          </div>
-          <div class="field">
-            <label>Mandal</label>
-            <input name="mandal" placeholder="Mandal" required>
-          </div>
+          <div class="field full"><label>House / Flat No.</label><input name="house" placeholder="House no, Street name" required></div>
+          <div class="field"><label>City</label><input name="city" placeholder="City" required></div>
+          <div class="field"><label>Mandal</label><input name="mandal" placeholder="Mandal" required></div>
         </div>
       </div>
 
       <div class="form-section">
         <p class="form-section-title">Order Details</p>
         <div class="form-grid">
-          <div class="field">
-            <label>Size</label>
-            <select name="size">
-              <option>S</option><option>M</option>
-              <option>L</option><option>XL</option><option>XXL</option>
-            </select>
+          <div class="field"><label>Size</label>
+            <select name="size"><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
           </div>
-          <div class="field">
-            <label>Quantity</label>
-            <input name="quantity" type="number" min="1" placeholder="1" required>
+          <div class="field"><label>Quantity</label>
+            <input name="quantity" type="number" min="1" max="{{ design.stock_quantity }}" placeholder="1" required>
           </div>
         </div>
       </div>
@@ -161,10 +142,10 @@
       <div class="form-section">
         <p class="form-section-title">Payment Proof</p>
         <label class="upload-area" for="payFile">
-          <input type="file" id="payFile" name="payment" accept="image/*" onchange="updateLabel(this)" required>
-          <svg class="upload-icon" viewBox="0 0 40 40" fill="none"><rect x="4" y="10" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M20 32V18M20 18L14 24M20 18L26 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <input type="file" id="payFile" name="payment" accept="image/png,image/jpg,image/jpeg,image/gif,image/webp" onchange="updateLabel(this)" required>
+          <svg class="upload-icon" width="44" height="44" viewBox="0 0 44 44" fill="none"><rect x="4" y="10" width="36" height="28" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M20 32V18M20 18L14 24M20 18L26 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="17" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
           <p class="upload-text" id="uploadText">Upload Payment Screenshot</p>
-          <p class="upload-hint">PNG, JPG up to 10MB</p>
+          <p class="upload-hint">PNG, JPG, JPEG, GIF, WEBP only</p>
         </label>
       </div>
 
@@ -173,12 +154,13 @@
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </form>
+    <p class="track-note">Already ordered? <a href="/track">Track your order →</a></p>
   </div>
 </div>
 <script>
 function updateLabel(input) {
-  const text = document.getElementById('uploadText');
-  if(input.files && input.files[0]) text.textContent = '✓ ' + input.files[0].name;
+  if(input.files && input.files[0])
+    document.getElementById('uploadText').textContent = '✓ ' + input.files[0].name;
 }
 </script>
 </body>
