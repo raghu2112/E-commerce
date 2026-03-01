@@ -10,14 +10,12 @@
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
   .bg{position:fixed;inset:0;background:radial-gradient(ellipse 50% 50% at 70% 30%,rgba(255,107,0,0.07),transparent);pointer-events:none;}
-  .card{position:relative;z-index:2;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:52px 48px;width:100%;max-width:600px;box-shadow:0 40px 80px rgba(0,0,0,0.5);animation:slideUp .7s cubic-bezier(.16,1,.3,1) forwards;}
+  .card{position:relative;z-index:2;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:52px 48px;width:100%;max-width:640px;box-shadow:0 40px 80px rgba(0,0,0,0.5);animation:slideUp .7s cubic-bezier(.16,1,.3,1) forwards;}
   @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
   .back-link{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;margin-bottom:36px;transition:color .2s;}
   .back-link:hover{color:var(--orange);}
   .eyebrow{font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:10px;}
   h1{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:.04em;margin-bottom:36px;line-height:1;}
-  .current-img{width:100%;height:200px;object-fit:cover;border-radius:4px;border:1px solid var(--border);margin-bottom:8px;}
-  .current-label{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;display:block;}
   .field{margin-bottom:18px;}
   .field label{display:block;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:9px;}
   .field input,.field textarea{width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:.92rem;border-radius:3px;outline:none;transition:all .25s;}
@@ -25,15 +23,31 @@
   .field input::placeholder,.field textarea::placeholder{color:var(--muted);}
   .field textarea{resize:vertical;min-height:90px;line-height:1.6;}
   .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .field-note{font-size:.72rem;color:var(--muted);margin-top:6px;}
+  .error-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:3px;padding:14px 16px;font-size:.83rem;color:var(--red);margin-bottom:20px;}
+
+  /* Current images grid */
+  .images-label{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:12px;display:block;}
+  .images-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-bottom:16px;}
+  .img-item{position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;border:1px solid var(--border);}
+  .img-item img{width:100%;height:100%;object-fit:cover;display:block;}
+  .img-item .primary-badge{position:absolute;top:5px;left:5px;background:var(--orange);color:#000;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:3px 7px;border-radius:2px;}
+  .img-item .del-btn{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.15);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background .2s;font-size:.7rem;}
+  .img-item .del-btn:hover{background:var(--red);border-color:var(--red);}
+  .img-count{font-size:.72rem;color:var(--muted);margin-bottom:20px;}
+
+  /* Add images upload */
   .upload-area{border:2px dashed var(--border);border-radius:4px;padding:24px;text-align:center;cursor:pointer;transition:all .25s;background:var(--input-bg);}
   .upload-area:hover{border-color:var(--orange);background:#1c1309;}
   .upload-area input{display:none;}
   .upload-text{font-size:.82rem;color:var(--muted);}
   .upload-hint{font-size:.7rem;color:#444;margin-top:4px;}
-  .error-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:3px;padding:14px 16px;font-size:.83rem;color:var(--red);margin-bottom:20px;}
+  .new-previews{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:12px;}
+  .new-preview{aspect-ratio:1;border-radius:3px;overflow:hidden;border:1px solid var(--border);}
+  .new-preview img{width:100%;height:100%;object-fit:cover;}
+
   .submit-btn{width:100%;background:var(--orange);color:#000;border:none;padding:16px;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border-radius:3px;cursor:pointer;margin-top:8px;transition:all .3s;box-shadow:0 0 36px rgba(255,107,0,.28);display:flex;align-items:center;justify-content:center;gap:10px;}
   .submit-btn:hover{background:#ff7d1a;transform:translateY(-2px);box-shadow:0 4px 50px rgba(255,107,0,.45);}
-  .stock-note{font-size:.75rem;color:var(--muted);margin-top:6px;}
 </style>
 </head>
 <body>
@@ -50,8 +64,21 @@
   <div class="error-box">⚠ {{ error }}</div>
   {% endif %}
 
-  <img class="current-img" src="/static/uploads/{{ design.image }}" alt="{{ design.name }}">
-  <span class="current-label">Current image — upload a new one below to replace it (optional)</span>
+  <!-- Current images -->
+  <span class="images-label">Current Photos</span>
+  <div class="images-grid">
+    {% for img in design.images %}
+    <div class="img-item">
+      <img src="/static/uploads/{{ img.filename }}" alt="Photo {{ loop.index }}">
+      {% if loop.first %}<span class="primary-badge">Main</span>{% endif %}
+      {% if design.images|length > 1 %}
+      <a class="del-btn" href="/delete_design_image/{{ img.id }}" title="Remove photo"
+         onclick="return confirm('Remove this photo?')">✕</a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <p class="img-count">{{ design.images|length }} photo{% if design.images|length != 1 %}s{% endif %} — first photo is the main image shown on the store</p>
 
   <form method="POST" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -80,16 +107,17 @@
     <div class="field">
       <label>Stock Quantity</label>
       <input name="stock_quantity" type="number" min="0" value="{{ design.stock_quantity }}" required>
-      <p class="stock-note">Current: {{ design.stock_quantity }} units ({{ design.stock }}). Setting to 0 marks as Out of Stock.</p>
+      <p class="field-note">Currently {{ design.stock_quantity }} units ({{ design.stock }}). Setting to 0 marks as Out of Stock.</p>
     </div>
 
     <div class="field">
-      <label>Replace Image (optional)</label>
-      <label class="upload-area" for="newImg">
-        <input type="file" id="newImg" name="image" accept="image/*" onchange="showFile(this)">
-        <p class="upload-text" id="uploadText">Click to upload a new image</p>
-        <p class="upload-hint">PNG, JPG, JPEG, GIF, WEBP</p>
+      <label>Add More Photos <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;font-size:.65rem">(optional — these are added to existing photos)</span></label>
+      <label class="upload-area" for="newImgs">
+        <input type="file" id="newImgs" name="images" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" multiple onchange="previewNew(this)">
+        <p class="upload-text" id="newUploadText">Click to add more photos</p>
+        <p class="upload-hint">PNG · JPG · JPEG · GIF · WEBP · Max 5MB each</p>
       </label>
+      <div class="new-previews" id="newPreviews"></div>
     </div>
 
     <button class="submit-btn" type="submit">
@@ -99,9 +127,22 @@
   </form>
 </div>
 <script>
-function showFile(input) {
-  if (input.files && input.files[0])
-    document.getElementById('uploadText').textContent = '✓ ' + input.files[0].name;
+function previewNew(input) {
+  const grid = document.getElementById('newPreviews');
+  const text = document.getElementById('newUploadText');
+  grid.innerHTML = '';
+  if (!input.files || !input.files.length) return;
+  text.textContent = `✓ ${input.files.length} new photo${input.files.length > 1 ? 's' : ''} selected`;
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement('div');
+      div.className = 'new-preview';
+      div.innerHTML = `<img src="${e.target.result}" alt="new">`;
+      grid.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
 }
 </script>
 </body>
