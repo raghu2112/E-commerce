@@ -1,4 +1,8 @@
-Flask
-Flask-SQLAlchemy
-Werkzeug
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
+Flask-Mail==0.10.0
+Werkzeug==3.0.1
+reportlab==4.1.0
+openpyxl==3.1.2
 gunicorn
