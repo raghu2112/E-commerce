@@ -8,7 +8,7 @@
 <style>
   :root { --orange:#FF6B00; --dark:#0A0A0A; --card:#111; --text:#F0EDE8; --muted:#666; --border:rgba(255,255,255,0.08); --green:#22c55e; }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; overflow:hidden; }
+  body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; overflow-y:auto; }
   /* BG confetti-like dots */
   .bg {
     position:fixed; inset:0;
@@ -52,6 +52,12 @@
   .btn-primary:hover { background:#ff7d1a; transform:translateY(-2px); box-shadow:0 4px 40px rgba(255,107,0,0.4); }
   .btn-secondary { padding:14px 20px; border:1px solid var(--border); color:var(--muted); text-decoration:none; font-size:0.8rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; border-radius:3px; transition:all 0.25s; display:flex; align-items:center; justify-content:center; }
   .btn-secondary:hover { border-color:var(--orange); color:var(--orange); }
+  @media(max-width:480px) {
+    .card { padding:36px 24px; }
+    h1 { font-size:2.8rem; }
+    .btn-row { flex-direction:column; }
+    .btn-primary, .btn-secondary { width:100%; }
+  }
 </style>
 </head>
 <body>
@@ -95,7 +101,7 @@
   <hr class="divider">
 
   <div class="btn-row">
-    <a class="btn-primary" href="/static/invoices/{{invoice}}" download>
+    <a class="btn-primary" href="/invoice/{{ order_id }}">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M8 11L4 7M8 11L12 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       Download Invoice
     </a>
