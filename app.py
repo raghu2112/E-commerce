@@ -256,7 +256,7 @@ class Order(db.Model):
 with app.app_context():
     db.create_all()
     if not Settings.query.first():
-        db.session.add(Settings(admin_password=generate_password_hash("admin123")))
+        db.session.add(Settings(admin_password=generate_password_hash("Raghu@123")))
         db.session.commit()
     if not CLOUDINARY_AVAILABLE:
         os.makedirs(LOCAL_UPLOAD, exist_ok=True)
