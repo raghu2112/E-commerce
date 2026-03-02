@@ -238,39 +238,62 @@
   <div class="section">
     <div class="section-head">
       <span class="section-name">Email Configuration</span>
-      <span class="badge {% if settings.mail_username %}badge-green{% else %}badge-muted{% endif %}">
-        {% if settings.mail_username %}✓ Configured{% else %}Not set{% endif %}
+      <span class="badge {% if settings.resend_api_key and settings.resend_from %}badge-green{% else %}badge-muted{% endif %}">
+        {% if settings.resend_api_key and settings.resend_from %}✓ Configured{% else %}Not set{% endif %}
       </span>
     </div>
+
     <p class="info-note">
-      Use a <strong>Gmail App Password</strong> — not your regular Gmail password.
-      Enable 2FA on Gmail → Security → App Passwords → generate one.
-      <a href="https://myaccount.google.com/apppasswords" target="_blank">Open Google App Passwords →</a>
+      Emails are sent via <strong>Resend</strong> — free, 3,000 emails/month, no SMTP needed.<br>
+      <strong>One-time setup:</strong>
+      &nbsp;① <a href="https://resend.com" target="_blank">Sign up at resend.com</a>
+      &nbsp;② Go to <strong>API Keys</strong> → Create Key → paste below
+      &nbsp;③ Go to <strong>Domains</strong> → Add your domain and verify it
+      (or use <code>onboarding@resend.dev</code> as From address just for testing — only sends to your own Resend-registered email)
     </p>
+
     <form class="settings-form" method="POST" action="/update_email_config">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
       <div class="settings-field">
-        <label>Gmail Address <span style="font-size:.6rem;color:var(--muted);text-transform:none;letter-spacing:0">(used to send emails)</span></label>
-        <input type="email" name="mail_username" value="{{ settings.mail_username }}" placeholder="your@gmail.com">
-      </div>
-      <div class="settings-field">
-        <label>Gmail App Password</label>
+        <label>Resend API Key</label>
         <div class="pw-wrap">
-          <input type="password" id="mailPwd" name="mail_password"
-                 placeholder="{% if settings.mail_password %}••••••••••••••••{% else %}16-character app password{% endif %}"
+          <input type="password" id="resendKey" name="resend_api_key"
+                 placeholder="{% if settings.resend_api_key %}••••••••••••••••••••{% else %}re_xxxxxxxxxxxxxxxxxxxx{% endif %}"
                  autocomplete="new-password">
-          <button type="button" class="pw-eye" onclick="togglePwd('mailPwd')">
+          <button type="button" class="pw-eye" onclick="togglePwd('resendKey')">
             <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M1 9s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="2.5" stroke="currentColor" stroke-width="1.3"/></svg>
           </button>
         </div>
-        <p class="field-note">Leave blank to keep existing password unchanged.</p>
+        <p class="field-note">Leave blank to keep your existing key. Get it from <a href="https://resend.com/api-keys" target="_blank">resend.com/api-keys</a>.</p>
       </div>
+
       <div class="settings-field">
-        <label>Admin Alert Email <span style="font-size:.6rem;color:var(--muted);text-transform:none;letter-spacing:0">(receives new order alerts)</span></label>
-        <input type="email" name="admin_email" value="{{ settings.admin_email }}" placeholder="admin@gmail.com">
-        <p class="field-note">Can be same as Gmail above or a different address.</p>
+        <label>From Address <span style="font-size:.6rem;color:var(--muted);text-transform:none;letter-spacing:0">(what customers see as the sender)</span></label>
+        <input type="text" name="resend_from" value="{{ settings.resend_from }}"
+               placeholder="THREADLINE &lt;orders@yourdomain.com&gt;">
+        <p class="field-note">Format: <code>Display Name &lt;email@yourdomain.com&gt;</code> — the domain must be verified in Resend. For testing use <code>onboarding@resend.dev</code>.</p>
       </div>
-      <button class="btn btn-orange" type="submit">Save Email Config</button>
+
+      <div class="settings-field">
+        <label>Your Alert Email <span style="font-size:.6rem;color:var(--muted);text-transform:none;letter-spacing:0">(you receive a notification for every new order)</span></label>
+        <input type="email" name="admin_email" value="{{ settings.admin_email }}"
+               placeholder="your@gmail.com">
+        <p class="field-note">This is YOUR email — can be any address you check regularly.</p>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn-orange" type="submit">Save Email Config</button>
+        {% if settings.resend_api_key and settings.resend_from and settings.admin_email %}
+        <form method="POST" action="/send_test_email" style="margin:0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-ghost" type="submit"
+                  onclick="return confirm('Send a test email to {{ settings.admin_email }}?')">
+            Send Test Email →
+          </button>
+        </form>
+        {% endif %}
+      </div>
     </form>
   </div>
 
@@ -303,11 +326,11 @@
             <td><span class="badge badge-muted">{{ o.size }}</span></td>
             <td>{{ o.quantity }}</td>
             <td>
-              <a href="/static/uploads/{{ o.payment_image }}" target="_blank">
-                <img class="payment-thumb" src="/static/uploads/{{ o.payment_image }}">
+              <a href="{{ o.payment_image }}" target="_blank">
+                <img class="payment-thumb" src="{{ o.payment_image }}">
               </a>
             </td>
-            <td><a class="action-link" href="/static/invoices/invoice_{{ o.id }}.pdf" target="_blank">PDF</a></td>
+            <td><a class="action-link" href="/invoice/{{ o.id }}" target="_blank">PDF</a></td>
             <td class="td-date">{{ o.created_at }}</td>
             <td>
               <!-- Status dropdown — auto-submits on change -->
@@ -418,7 +441,7 @@
         <tbody>
           {% for d in designs %}
           <tr>
-            <td><img class="design-img" src="/static/uploads/{{ d.image }}" alt="{{ d.name }}"></td>
+            <td><img class="design-img" src="{{ d.image }}" alt="{{ d.name }}"></td>
             <td class="td-sm">{{ d.design_code }}</td>
             <td><b>{{ d.name }}</b><br><span class="td-sm">{{ d.description[:40] }}{% if d.description|length > 40 %}…{% endif %}</span></td>
             <td><b style="color:var(--orange)">₹{{ d.price }}</b></td>
