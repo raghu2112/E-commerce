@@ -115,7 +115,11 @@
   .f-links a:hover{color:var(--orange);}
 
   @media(max-width:768px){nav{padding:18px 20px}.catalog{padding:80px 16px 60px}.section-hd{flex-direction:column;align-items:flex-start;gap:8px}.grid{grid-template-columns:repeat(2,1fr);gap:2px}footer{flex-direction:column;gap:12px;text-align:center;padding:28px 20px}}
-  @media(max-width:480px){.grid{grid-template-columns:1fr}.nav-btn:not(.primary){display:none}}
+  @media(max-width:480px){
+    .grid{grid-template-columns:1fr}
+    nav{padding:14px 16px;}
+    .nav-btn{padding:8px 13px;font-size:.65rem;letter-spacing:.12em;}
+  }
 </style>
 </head>
 <body>
@@ -163,12 +167,12 @@
           {% if imgs %}
             {% for img in imgs %}
             <div class="carousel-slide">
-              <img src="/static/uploads/{{ img.filename }}" alt="{{ d.name }} photo {{ loop.index }}" loading="{% if loop.first %}eager{% else %}lazy{% endif %}">
+              <img src="{{ img.filename }}" alt="{{ d.name }} photo {{ loop.index }}" loading="{% if loop.first %}eager{% else %}lazy{% endif %}">
             </div>
             {% endfor %}
           {% else %}
             <div class="carousel-slide">
-              <img src="/static/uploads/{{ d.image }}" alt="{{ d.name }}">
+              <img src="{{ d.image }}" alt="{{ d.name }}">
             </div>
           {% endif %}
         </div>
@@ -239,7 +243,10 @@
 
 <footer>
   <div class="f-logo">THREAD<span>LINE</span></div>
-  <span>© 2025 Custom T-Shirt Store. All Rights Reserved.</span>
+  <div class="f-links">
+    <a href="/track">Track Order</a>
+  </div>
+  <span>© 2025 THREADLINE. All Rights Reserved.</span>
 </footer>
 
 {% if settings and settings.admin_whatsapp %}
