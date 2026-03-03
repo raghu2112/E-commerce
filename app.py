@@ -13,40 +13,13 @@ import urllib.error
 import json
 import os
 
-# ── Cloudinary (only active when env vars present) ─────────────────────────────
-try:
-    import cloudinary
-    import cloudinary.uploader
-    CLOUDINARY_AVAILABLE = bool(
-        os.environ.get('CLOUDINARY_CLOUD_NAME') and
-        os.environ.get('CLOUDINARY_API_KEY') and
-        os.environ.get('CLOUDINARY_API_SECRET')
-    )
-    if CLOUDINARY_AVAILABLE:
-        cloudinary.config(
-            cloud_name = os.environ['CLOUDINARY_CLOUD_NAME'],
-            api_key    = os.environ['CLOUDINARY_API_KEY'],
-            api_secret = os.environ['CLOUDINARY_API_SECRET'],
-        )
-except ImportError:
-    CLOUDINARY_AVAILABLE = False
-
 BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
-LOCAL_UPLOAD = os.path.join(BASE_DIR, 'static', 'uploads')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
 
 app = Flask(__name__)
 
 # ─── DATABASE ──────────────────────────────────────────────────────────────────
-# Render sets DATABASE_URL automatically when a PostgreSQL db is attached.
-# Locally falls back to SQLite — no setup needed.
-_db_url = os.environ.get('DATABASE_URL', '')
-if _db_url.startswith('postgres://'):
-    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
-if not _db_url:
-    _db_url = 'sqlite:///' + os.path.join(BASE_DIR, 'database.db')
-
-app.config['SQLALCHEMY_DATABASE_URI']        = _db_url
-app.config['SQLALCHEMY_ENGINE_OPTIONS']      = {'pool_pre_ping': True}
+app.config['SQLALCHEMY_DATABASE_URI']        = 'sqlite:///' + os.path.join(BASE_DIR, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # ─── CORE ─────────────────────────────────────────────────────────────────────
@@ -74,30 +47,16 @@ def allowed_file(filename):
 
 
 def save_image(file_obj, folder='designs'):
-    """Upload to Cloudinary in production, local disk in dev.
-    Always returns a full URL string, or None on failure."""
+    """Validate and save an uploaded image to static/uploads. Returns relative URL or None."""
     if not file_obj or not allowed_file(file_obj.filename):
         return None
-
-    if CLOUDINARY_AVAILABLE:
-        try:
-            result = cloudinary.uploader.upload(
-                file_obj,
-                folder=f"threadline/{folder}",
-                resource_type='image',
-            )
-            return result['secure_url']
-        except Exception as e:
-            print(f"[CLOUDINARY ERROR] {e}")
-            return None
-    else:
-        from werkzeug.utils import secure_filename
-        os.makedirs(LOCAL_UPLOAD, exist_ok=True)
-        safe = secure_filename(file_obj.filename)
-        if not safe:
-            return None
-        file_obj.save(os.path.join(LOCAL_UPLOAD, safe))
-        return f'/static/uploads/{safe}'
+    from werkzeug.utils import secure_filename
+    safe = secure_filename(file_obj.filename)
+    if not safe:
+        return None
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    file_obj.save(os.path.join(UPLOAD_FOLDER, safe))
+    return f'/static/uploads/{safe}'
 
 
 def safe_int(value, default=1, minimum=None, maximum=None):
@@ -256,10 +215,9 @@ class Order(db.Model):
 with app.app_context():
     db.create_all()
     if not Settings.query.first():
-        db.session.add(Settings(admin_password=generate_password_hash("Raghu@123")))
+        db.session.add(Settings(admin_password=generate_password_hash("admin123")))
         db.session.commit()
-    if not CLOUDINARY_AVAILABLE:
-        os.makedirs(LOCAL_UPLOAD, exist_ok=True)
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     # Idempotent seed: DesignImage from Design.image for legacy rows
     for dsg in Design.query.all():
         if dsg.image and not DesignImage.query.filter_by(design_id=dsg.id, sort_order=0).first():
