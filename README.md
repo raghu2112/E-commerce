@@ -1,6 +1,6 @@
 # THREADLINE
 
-A custom t-shirt e-commerce web app built with Flask. Customers browse designs, place orders with payment screenshot uploads, and track their order status. Admins manage everything through a dashboard.
+A custom e-commerce web app built with Flask. Customers browse products, place orders with payment screenshot uploads, and track their order status. Admins manage everything through a dashboard.
 
 ---
 
