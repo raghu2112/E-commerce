@@ -215,7 +215,7 @@ class Order(db.Model):
 with app.app_context():
     db.create_all()
     if not Settings.query.first():
-        db.session.add(Settings(admin_password=generate_password_hash("admin123")))
+        db.session.add(Settings(admin_password=generate_password_hash("Raghu@123")))
         db.session.commit()
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     # Idempotent seed: DesignImage from Design.image for legacy rows
@@ -709,3 +709,4 @@ def sales_analysis():
 
 if __name__ == "__main__":
     app.run(debug=os.environ.get('FLASK_DEBUG', '0') == '1')
+
