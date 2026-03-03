@@ -104,12 +104,12 @@
         {% if design.images %}
           {% for img in design.images %}
           <div class="carousel-slide">
-            <img src="/static/uploads/{{ img.filename }}" alt="{{ design.name }}" loading="{% if loop.first %}eager{% else %}lazy{% endif %}">
+            <img src="{{ img.filename }}" alt="{{ design.name }}" loading="{% if loop.first %}eager{% else %}lazy{% endif %}">
           </div>
           {% endfor %}
         {% else %}
           <div class="carousel-slide">
-            <img src="/static/uploads/{{ design.image }}" alt="{{ design.name }}">
+            <img src="{{ design.image }}" alt="{{ design.name }}">
           </div>
         {% endif %}
       </div>
@@ -166,7 +166,7 @@
         <p class="form-section-title">Personal Details</p>
         <div class="form-grid">
           <div class="field full"><label>Full Name</label><input name="customer_name" placeholder="Your full name" required></div>
-          <div class="field"><label>Phone</label><input name="phone" placeholder="10-digit number" required></div>
+          <div class="field"><label>Phone</label><input name="phone" type="tel" placeholder="10-digit number" pattern="[0-9]{10}" maxlength="10" inputmode="numeric" required></div>
           <div class="field"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
         </div>
       </div>
