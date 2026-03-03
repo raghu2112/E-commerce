@@ -249,7 +249,7 @@
       &nbsp;① <a href="https://resend.com" target="_blank">Sign up at resend.com</a>
       &nbsp;② Go to <strong>API Keys</strong> → Create Key → paste below
       &nbsp;③ Go to <strong>Domains</strong> → Add your domain and verify it
-      (or use <code>onboarding@resend.dev</code> as From address just for testing — only sends to your own Resend-registered email)
+      (or use <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ef1f0fcf1ffecfaf7f0f9deecfbedfbf0fab0fafbe8">[email&#160;protected]</a></code> as From address just for testing — only sends to your own Resend-registered email)
     </p>
 
     <form class="settings-form" method="POST" action="/update_email_config">
@@ -272,7 +272,7 @@
         <label>From Address <span style="font-size:.6rem;color:var(--muted);text-transform:none;letter-spacing:0">(what customers see as the sender)</span></label>
         <input type="text" name="resend_from" value="{{ settings.resend_from }}"
                placeholder="THREADLINE &lt;orders@yourdomain.com&gt;">
-        <p class="field-note">Format: <code>Display Name &lt;email@yourdomain.com&gt;</code> — the domain must be verified in Resend. For testing use <code>onboarding@resend.dev</code>.</p>
+        <p class="field-note">Format: <code>Display Name &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="21444c40484d61584e5453454e4c40484f0f424e4c">[email&#160;protected]</a>&gt;</code> — the domain must be verified in Resend. For testing use <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="442b2a262b2536202d2a2304362137212a206a202132">[email&#160;protected]</a></code>.</p>
       </div>
 
       <div class="settings-field">
@@ -471,6 +471,7 @@
 
 </main>
 
+
 <script>
 // ── Status dropdown confirmation & colour update ──────────────────────────────
 function confirmStatus(select, orderId, currentStatus) {
@@ -482,7 +483,6 @@ function confirmStatus(select, orderId, currentStatus) {
     : `Change order #${orderId} status to "${newStatus}"? Customer will receive an email.`;
 
   if (!confirm(confirmMsg)) {
-    // Revert select to original value
     select.value = currentStatus;
     return;
   }
@@ -490,11 +490,11 @@ function confirmStatus(select, orderId, currentStatus) {
   // Update colour class immediately for visual feedback
   select.className = 'status-select s-' + newStatus.toLowerCase();
 
-  // Submit the form
+  // Submit the hidden form
   document.getElementById('sf-' + orderId).submit();
 }
 
-// ── Gmail App Password show/hide ──────────────────────────────────────────────
+// ── Password show/hide ──────────────────────────────────────────────────────
 function togglePwd(id) {
   const input = document.getElementById(id);
   input.type = input.type === 'password' ? 'text' : 'password';
