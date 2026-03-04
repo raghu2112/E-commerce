@@ -357,21 +357,53 @@
   </div>
 
 
+
   <!-- ── COMPLETED ORDERS ──────────────────────────────────────────────────── -->
   <div class="section">
     <div class="section-head">
       <span class="section-name">Completed Orders</span>
-      <span class="badge badge-green">{{ completed_orders|length }}</span>
+      <div class="section-head-right">
+        <span class="badge badge-green">{{ completed_orders|length }}</span>
+        {% if completed_orders %}
+        <button class="btn btn-ghost" type="button"
+                onclick="selectAll('completed')"
+                id="sel-all-completed">Select All</button>
+        <button class="btn btn-red" type="button"
+                onclick="deleteSelected('completed')"
+                id="del-sel-completed" style="display:none">
+          Delete Selected
+        </button>
+        <button class="btn btn-red" type="button"
+                onclick="clearAll('completed', {{ completed_orders|length }})">
+          🗑 Clear All
+        </button>
+        {% endif %}
+      </div>
     </div>
+
+    <!-- Hidden form — JS populates and submits it -->
+    <form id="form-completed" method="POST" action="/clear_orders" style="display:none">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="status"     value="Completed">
+      <input type="hidden" name="mode"       id="mode-completed" value="selected">
+      <!-- selected IDs injected by JS -->
+    </form>
+
     <div class="table-wrap">
-      <table>
+      <table id="table-completed">
         <thead><tr>
+          <th style="width:36px">
+            <input type="checkbox" class="bulk-cb" title="Select all"
+                   onchange="toggleAll('completed', this)">
+          </th>
           <th>ID</th><th>Design</th><th>Customer</th><th>Phone</th>
           <th>Size</th><th>Qty</th><th>Completed At</th><th>Status</th>
         </tr></thead>
         <tbody>
           {% for o in completed_orders %}
           <tr>
+            <td><input type="checkbox" class="row-cb-completed" value="{{ o.id }}"
+                       onchange="onRowCheck('completed')"></td>
             <td class="td-id">#{{ o.id }}</td>
             <td>{{ o.design }}</td>
             <td>{{ o.customer_name }}</td>
@@ -382,7 +414,7 @@
             <td><span class="badge badge-green">Completed</span></td>
           </tr>
           {% else %}
-          <tr class="empty-row"><td colspan="8"><span>📦</span>No completed orders yet.</td></tr>
+          <tr class="empty-row"><td colspan="9"><span>📦</span>No completed orders yet.</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -394,17 +426,46 @@
   <div class="section">
     <div class="section-head">
       <span class="section-name">Cancelled Orders</span>
-      <span class="badge badge-red">{{ cancelled_orders|length }}</span>
+      <div class="section-head-right">
+        <span class="badge badge-red">{{ cancelled_orders|length }}</span>
+        {% if cancelled_orders %}
+        <button class="btn btn-ghost" type="button"
+                onclick="selectAll('cancelled')"
+                id="sel-all-cancelled">Select All</button>
+        <button class="btn btn-red" type="button"
+                onclick="deleteSelected('cancelled')"
+                id="del-sel-cancelled" style="display:none">
+          Delete Selected
+        </button>
+        <button class="btn btn-red" type="button"
+                onclick="clearAll('cancelled', {{ cancelled_orders|length }})">
+          🗑 Clear All
+        </button>
+        {% endif %}
+      </div>
     </div>
+
+    <form id="form-cancelled" method="POST" action="/clear_orders" style="display:none">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="status"     value="Cancelled">
+      <input type="hidden" name="mode"       id="mode-cancelled" value="selected">
+    </form>
+
     <div class="table-wrap">
-      <table>
+      <table id="table-cancelled">
         <thead><tr>
+          <th style="width:36px">
+            <input type="checkbox" class="bulk-cb" title="Select all"
+                   onchange="toggleAll('cancelled', this)">
+          </th>
           <th>ID</th><th>Design</th><th>Customer</th><th>Phone</th>
           <th>Size</th><th>Qty</th><th>Cancelled At</th><th>Status</th>
         </tr></thead>
         <tbody>
           {% for o in cancelled_orders %}
           <tr>
+            <td><input type="checkbox" class="row-cb-cancelled" value="{{ o.id }}"
+                       onchange="onRowCheck('cancelled')"></td>
             <td class="td-id">#{{ o.id }}</td>
             <td>{{ o.design }}</td>
             <td>{{ o.customer_name }}</td>
@@ -415,7 +476,7 @@
             <td><span class="badge badge-red">Cancelled</span></td>
           </tr>
           {% else %}
-          <tr class="empty-row"><td colspan="8"><span>✅</span>No cancelled orders.</td></tr>
+          <tr class="empty-row"><td colspan="9"><span>✅</span>No cancelled orders.</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -499,6 +560,63 @@ function togglePwd(id) {
   const input = document.getElementById(id);
   input.type = input.type === 'password' ? 'text' : 'password';
 }
+
+// ── Bulk delete — completed & cancelled orders ─────────────────────────────
+
+function toggleAll(section, masterCb) {
+  document.querySelectorAll(`.row-cb-${section}`)
+    .forEach(cb => cb.checked = masterCb.checked);
+  onRowCheck(section);
+}
+
+function onRowCheck(section) {
+  const checked = document.querySelectorAll(`.row-cb-${section}:checked`).length;
+  const delBtn  = document.getElementById(`del-sel-${section}`);
+  const selBtn  = document.getElementById(`sel-all-${section}`);
+  if (delBtn) delBtn.style.display = checked > 0 ? '' : 'none';
+  if (selBtn) selBtn.textContent   = checked > 0 ? `Deselect All` : `Select All`;
+}
+
+function selectAll(section) {
+  const cbs     = document.querySelectorAll(`.row-cb-${section}`);
+  const checked = document.querySelectorAll(`.row-cb-${section}:checked`).length;
+  const selectingAll = checked < cbs.length;
+  cbs.forEach(cb => cb.checked = selectingAll);
+  // sync header checkbox
+  const hdr = document.querySelector(`#table-${section} .bulk-cb`);
+  if (hdr) hdr.checked = selectingAll;
+  onRowCheck(section);
+}
+
+function deleteSelected(section) {
+  const ids = [...document.querySelectorAll(`.row-cb-${section}:checked`)]
+                .map(cb => cb.value);
+  if (!ids.length) return;
+  if (!confirm(`Permanently delete ${ids.length} selected order${ids.length > 1 ? 's' : ''}? This cannot be undone.`)) return;
+  submitClearForm(section, 'selected', ids);
+}
+
+function clearAll(section, total) {
+  if (!confirm(`Permanently delete ALL ${total} ${section} order${total !== 1 ? 's' : ''}? This cannot be undone.`)) return;
+  submitClearForm(section, 'all', []);
+}
+
+function submitClearForm(section, mode, ids) {
+  const form = document.getElementById(`form-${section}`);
+  // Remove any previously injected id inputs
+  form.querySelectorAll('input[name="ids"]').forEach(el => el.remove());
+  document.getElementById(`mode-${section}`).value = mode;
+  ids.forEach(id => {
+    const inp = document.createElement('input');
+    inp.type  = 'hidden';
+    inp.name  = 'ids';
+    inp.value = id;
+    form.appendChild(inp);
+  });
+  form.style.display = '';
+  form.submit();
+}
+
 </script>
 </body>
 </html>
