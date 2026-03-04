@@ -587,6 +587,39 @@ def send_test_email():
     return redirect('/dashboard')
 
 
+@app.route('/clear_orders', methods=['POST'])
+def clear_orders():
+    """Delete completed or cancelled orders — selected rows or all at once.
+    Frees up Neon database space without touching active orders."""
+    if not session.get('admin'):
+        return redirect('/admin')
+
+    status = request.form.get('status', '').strip()   # 'Completed' or 'Cancelled'
+    mode   = request.form.get('mode',   '').strip()   # 'all' or 'selected'
+
+    if status not in ('Completed', 'Cancelled'):
+        return redirect('/dashboard')
+
+    try:
+        if mode == 'all':
+            Order.query.filter_by(status=status).delete()
+            db.session.commit()
+        elif mode == 'selected':
+            raw_ids = request.form.getlist('ids')
+            ids = [int(i) for i in raw_ids if i.isdigit()]
+            if ids:
+                Order.query.filter(
+                    Order.id.in_(ids),
+                    Order.status == status   # safety: only delete matching status
+                ).delete(synchronize_session=False)
+                db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"[CLEAR ORDERS ERROR] {e}")
+
+    return redirect('/dashboard')
+
+
 # ── DESIGN MANAGEMENT ─────────────────────────────────────────────────────────
 
 @app.route('/add_design', methods=['GET', 'POST'])
