@@ -19,8 +19,26 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
 app = Flask(__name__)
 
 # ─── DATABASE ──────────────────────────────────────────────────────────────────
-app.config['SQLALCHEMY_DATABASE_URI']        = 'sqlite:///' + os.path.join(BASE_DIR, 'database.db')
+_db_url = os.environ.get('DATABASE_URL', '')
+if not _db_url:
+    raise RuntimeError(
+        "DATABASE_URL environment variable is not set.\n"
+        "Set it to your Neon PostgreSQL connection string.\n"
+        "Example: postgresql://user:pass@host/dbname?sslmode=require\n"
+        "For local development, create a .env file and use python-dotenv."
+    )
+# Neon (and older Heroku) sometimes provides 'postgres://' — SQLAlchemy requires 'postgresql://'
+if _db_url.startswith('postgres://'):
+    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI']        = _db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS']      = {
+    'pool_pre_ping':  True,   # drop stale connections before using them
+    'pool_recycle':   300,    # recycle connections every 5 min (Neon idles fast)
+    'connect_args':   {'sslmode': 'require'},   # Neon requires SSL
+}
+
 
 # ─── CORE ─────────────────────────────────────────────────────────────────────
 app.secret_key = os.environ.get('SECRET_KEY', 'CHANGE-THIS-TO-A-LONG-RANDOM-STRING')
@@ -709,4 +727,5 @@ def sales_analysis():
 
 if __name__ == "__main__":
     app.run(debug=os.environ.get('FLASK_DEBUG', '0') == '1')
+
 
