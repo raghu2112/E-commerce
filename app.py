@@ -43,7 +43,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS']      = {
 # ─── CORE ─────────────────────────────────────────────────────────────────────
 app.secret_key = os.environ.get('SECRET_KEY', 'CHANGE-THIS-TO-A-LONG-RANDOM-STRING')
 app.config['ALLOWED_EXTENSIONS']         = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-app.config['MAX_CONTENT_LENGTH']         = 5 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH']         = 3 * 1024 * 1024
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
 db   = SQLAlchemy(app)
@@ -727,5 +727,6 @@ def sales_analysis():
 
 if __name__ == "__main__":
     app.run(debug=os.environ.get('FLASK_DEBUG', '0') == '1')
+
 
 
