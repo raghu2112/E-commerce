@@ -13,12 +13,14 @@ import urllib.error
 import json
 import os
 
-BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
 
 # ─── DATABASE ──────────────────────────────────────────────────────────────────
+# Requires DATABASE_URL to be set in environment (Render env vars / .env locally).
+# Format: postgresql://user:password@host/dbname?sslmode=require
+# Neon provides this string directly from their dashboard.
 _db_url = os.environ.get('DATABASE_URL', '')
 if not _db_url:
     raise RuntimeError(
@@ -39,11 +41,10 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS']      = {
     'connect_args':   {'sslmode': 'require'},   # Neon requires SSL
 }
 
-
 # ─── CORE ─────────────────────────────────────────────────────────────────────
 app.secret_key = os.environ.get('SECRET_KEY', 'CHANGE-THIS-TO-A-LONG-RANDOM-STRING')
 app.config['ALLOWED_EXTENSIONS']         = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-app.config['MAX_CONTENT_LENGTH']         = 3 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH']         = 5 * 1024 * 1024
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
 db   = SQLAlchemy(app)
@@ -65,16 +66,21 @@ def allowed_file(filename):
 
 
 def save_image(file_obj, folder='designs'):
-    """Validate and save an uploaded image to static/uploads. Returns relative URL or None."""
+    """Save uploaded image as binary into Neon PostgreSQL (StoredImage table).
+    Returns a relative URL  /img/<id>  that Flask serves back, or None on failure.
+    No disk, no Cloudinary — everything lives in the database."""
     if not file_obj or not allowed_file(file_obj.filename):
         return None
-    from werkzeug.utils import secure_filename
-    safe = secure_filename(file_obj.filename)
-    if not safe:
+    try:
+        data      = file_obj.read()
+        mime_type = file_obj.content_type or 'image/jpeg'
+        img       = StoredImage(data=data, mime_type=mime_type)
+        db.session.add(img)
+        db.session.flush()   # get the auto-assigned id before commit
+        return f'/img/{img.id}'
+    except Exception as e:
+        print(f"[SAVE IMAGE ERROR] {e}")
         return None
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    file_obj.save(os.path.join(UPLOAD_FOLDER, safe))
-    return f'/static/uploads/{safe}'
 
 
 def safe_int(value, default=1, minimum=None, maximum=None):
@@ -171,6 +177,14 @@ def build_invoice_pdf(order_id):
 #  MODELS
 # ══════════════════════════════════════════════════════════════════════════════
 
+class StoredImage(db.Model):
+    """Stores uploaded images as binary blobs directly in Neon PostgreSQL.
+    Served back via GET /img/<id> — no disk or external storage needed."""
+    id        = db.Column(db.Integer,     primary_key=True)
+    data      = db.Column(db.LargeBinary, nullable=False)
+    mime_type = db.Column(db.String(50),  nullable=False, default='image/jpeg')
+
+
 class Settings(db.Model):
     id               = db.Column(db.Integer, primary_key=True)
     admin_password   = db.Column(db.String(200), default="")
@@ -233,9 +247,8 @@ class Order(db.Model):
 with app.app_context():
     db.create_all()
     if not Settings.query.first():
-        db.session.add(Settings(admin_password=generate_password_hash("Raghu@123")))
+        db.session.add(Settings(admin_password=generate_password_hash("admin123")))
         db.session.commit()
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     # Idempotent seed: DesignImage from Design.image for legacy rows
     for dsg in Design.query.all():
         if dsg.image and not DesignImage.query.filter_by(design_id=dsg.id, sort_order=0).first():
@@ -372,6 +385,20 @@ def download_invoice(order_id):
         return redirect('/')
     return send_file(buf, download_name=f"invoice_{order_id}.pdf",
                      as_attachment=True, mimetype='application/pdf')
+
+
+@app.route('/img/<int:image_id>')
+def serve_image(image_id):
+    """Stream a stored image directly from Neon PostgreSQL."""
+    from flask import Response
+    img = db.session.get(StoredImage, image_id)
+    if not img:
+        return '', 404
+    return Response(
+        img.data,
+        mimetype=img.mime_type,
+        headers={'Cache-Control': 'public, max-age=31536000, immutable'}
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -727,6 +754,3 @@ def sales_analysis():
 
 if __name__ == "__main__":
     app.run(debug=os.environ.get('FLASK_DEBUG', '0') == '1')
-
-
-
